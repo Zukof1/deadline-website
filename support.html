@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support — Deadline.</title>
+<meta name="description" content="Get help with Deadline, the student assignment tracker. FAQ and contact information.">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #080808;
+    --dark: #111111;
+    --card: #141414;
+    --border: #1e1e1e;
+    --white: #ffffff;
+    --muted: #555555;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --orange: #f97316;
+    --red: #ef4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    backdrop-filter: blur(20px);
+    background: rgba(8,8,8,0.8);
+  }
+
+  .nav-logo {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--green); }
+
+  .nav-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    background: var(--white);
+    color: var(--black);
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+    letter-spacing: 0.2px;
+  }
+
+  .nav-cta:hover { background: #e0e0e0; transform: translateY(-1px); }
+
+  /* ── PAGE WRAPPER ── */
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 160px 48px 120px;
+  }
+
+  /* ── HEADER ── */
+  .page-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .page-eyebrow-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.3); }
+  }
+
+  .page-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(40px, 7vw, 72px);
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin-bottom: 20px;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+
+  .page-title em {
+    font-style: italic;
+    color: rgba(255,255,255,0.35);
+  }
+
+  .page-sub {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 80px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── FAQ ── */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 80px;
+  }
+
+  .faq-item {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--card);
+    transition: background 0.2s;
+  }
+
+  .faq-item:hover { background: #181818; }
+
+  .faq-question {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--white);
+    font-family: 'Satoshi', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 24px 28px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    letter-spacing: -0.2px;
+  }
+
+  .faq-chevron {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.25s ease, border-color 0.2s;
+    color: var(--muted);
+    font-size: 10px;
+  }
+
+  .faq-item.open .faq-chevron {
+    transform: rotate(180deg);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, padding 0.25s ease;
+    padding: 0 28px;
+  }
+
+  .faq-item.open .faq-answer {
+    max-height: 600px;
+    padding: 0 28px 24px;
+  }
+
+  .faq-answer p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .faq-answer p + p { margin-top: 12px; }
+
+  .faq-answer strong {
+    color: var(--white);
+    font-weight: 500;
+  }
+
+  .faq-answer .highlight {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    margin: 0 2px;
+  }
+
+  .highlight-green { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+  .highlight-yellow { background: rgba(234,179,8,0.1); color: var(--yellow); border: 1px solid rgba(234,179,8,0.2); }
+  .highlight-orange { background: rgba(249,115,22,0.1); color: var(--orange); border: 1px solid rgba(249,115,22,0.2); }
+  .highlight-red { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+
+  /* ── CONTACT ── */
+  .contact-card {
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px;
+    background: var(--card);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 50%;
+    transform: translateX(-50%);
+    width: 160px; height: 1px;
+    background: linear-gradient(to right, transparent, var(--green), transparent);
+  }
+
+  .contact-card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+  }
+
+  .contact-card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 32px;
+    max-width: 480px;
+  }
+
+  .contact-email-block {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--dark);
+  }
+
+  .contact-email-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+
+  .contact-email-text {
+    flex: 1;
+  }
+
+  .contact-email-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .contact-email-address {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--white);
+    letter-spacing: -0.2px;
+  }
+
+  .contact-copy-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: none;
+    color: var(--muted);
+    font-family: 'Satoshi', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .contact-copy-btn:hover {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .contact-copy-btn.copied {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .contact-note {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 20px;
+    line-height: 1.6;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 40px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .footer-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--white);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .page { padding: 120px 24px 80px; }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+    .contact-card { padding: 32px 24px; }
+    .contact-email-block { flex-wrap: wrap; }
+    .contact-copy-btn { width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">deadline<span>.</span></a>
+  <a href="https://apps.apple.com/us/app/deadline/id6767482309" target="_blank" class="nav-cta">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+    Download Free
+  </a>
+</nav>
+
+<!-- PAGE -->
+<div class="page">
+
+  <div class="page-eyebrow">
+    <div class="page-eyebrow-dot"></div>
+    Support
+  </div>
+
+  <h1 class="page-title">How can we<br><em>help you?</em></h1>
+  <p class="page-sub">Answers to common questions, and a direct line to get in touch.</p>
+
+  <!-- FAQ -->
+  <div class="section-label">FAQ</div>
+  <div class="faq-list">
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggle(this)">
+        How is this different from my calendar or reminders app?
+        <span class="faq-chevron">▾</span>
+      </button>
+      <div class="faq-answer">
+        <p>Your calendar is built for events: meetings, birthdays, appointments. Your reminders app is a general-purpose to-do list. Neither was designed with student assignments in mind.</p>
+        <p>Deadline is built for exactly one thing: <strong>tracking assignments with urgency</strong>. The moment you add a task, it shows you a live countdown and colour-codes it.
+          <span class="highlight highlight-green">green</span> when you have time,
+          <span class="highlight highlight-yellow">yellow</span> when it's closing in,
+          <span class="highlight highlight-orange">orange</span> when it's urgent, and
+          <span class="highlight highlight-red">red</span> when it's critical.
+          No setup, no calendar views to navigate, no noise. Just your assignments and how long you have left.
+        </p>
+        <p style="color: var(--white); font-size: 15px; font-weight: 400; border-left: 2px solid var(--green); padding-left: 16px; margin-top: 16px;">A calendar shows you <strong>when</strong> something is due. Deadline shows you <strong>how long you actually have</strong> and makes sure you feel it.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggle(this)">
+        Is Deadline really free? No catch?
+        <span class="faq-chevron">▾</span>
+      </button>
+      <div class="faq-answer">
+        <p>Yes, completely free. No subscription, no in-app purchases, no premium tier. Every feature in the app is available to everyone, always.</p>
+        <p>It was built by a student who needed it. There's no business model here — just a useful tool.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggle(this)">
+        Does Deadline collect my data?
+        <span class="faq-chevron">▾</span>
+      </button>
+      <div class="faq-answer">
+        <p>No. Everything you enter — subjects, assignments, due dates — stays on your device. We don't have servers storing your data. We don't have accounts. We have no idea who you are, and that's intentional.</p>
+        <p>If you delete the app, your data is gone. If you get a new phone, you'll need to re-enter your subjects. That's the trade-off for complete privacy.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggle(this)">
+        Does it work without internet?
+        <span class="faq-chevron">▾</span>
+      </button>
+      <div class="faq-answer">
+        <p>Fully offline. Deadline doesn't need an internet connection for anything. Open it on a plane, in a lecture hall with no signal, wherever — it works exactly the same.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggle(this)">
+        How does the urgency colour system work?
+        <span class="faq-chevron">▾</span>
+      </button>
+      <div class="faq-answer">
+        <p>Each assignment card has a 2px coloured line at the bottom that tells you exactly where you stand:</p>
+        <p>
+          <span class="highlight highlight-green">Green</span> 5 or more days left. You're fine.<br>
+          <span class="highlight highlight-yellow">Yellow</span> 2 to 4 days left. Start thinking about it.<br>
+          <span class="highlight highlight-orange">Orange</span> 24 to 48 hours. Time to get moving.<br>
+          <span class="highlight highlight-red">Red</span> Under 24 hours. The line pulses. You should be working on it.
+        </p>
+        <p>You can also toggle a live seconds countdown in Settings for assignments under 24 hours, or extend it to all assignments if you want maximum urgency everywhere.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggle(this)">
+        I accidentally completed an assignment. Can I undo it?
+        <span class="faq-chevron">▾</span>
+      </button>
+      <div class="faq-answer">
+        <p>Yes. There's no time limit on undo. Go to your completed assignments and restore it whenever you need to. No questions asked.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggle(this)">
+        Will there be an Android version?
+        <span class="faq-chevron">▾</span>
+      </button>
+      <div class="faq-answer">
+        <p>Android (Google Play) is planned for v1.1. It's being built by one person, so timelines are honest rather than rushed. Follow along or reach out if you'd like to be notified when it launches.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggle(this)">
+        How do I delete all my data?
+        <span class="faq-chevron">▾</span>
+      </button>
+      <div class="faq-answer">
+        <p>Go to <strong>Settings</strong> inside the app and tap <strong>Clear All Data</strong>. This wipes everything — subjects, assignments, completed items. It cannot be undone, so make sure you mean it.</p>
+        <p>Alternatively, deleting the app from your phone removes all data permanently.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CONTACT -->
+  <div class="section-label">Contact</div>
+  <div class="contact-card">
+    <h2>Get in touch</h2>
+    <p>Found a bug? Have a feature request? Just want to say something? Send us an email directly — no forms, no tickets, no bots. A real person reads every message.</p>
+
+    <div class="contact-email-block">
+      <div class="contact-email-icon">✉️</div>
+      <div class="contact-email-text">
+        <div class="contact-email-label">Email us at</div>
+        <div class="contact-email-address">deadlineapp.contact@gmail.com</div>
+      </div>
+      <button class="contact-copy-btn" onclick="copyEmail(this)">Copy</button>
+    </div>
+
+    <p class="contact-note">We typically respond within a day or two. If you're reporting a bug, include your iOS version and a quick description of what happened — it helps a lot.</p>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">deadline.</div>
+  <div>Made with purpose. Free to use.</div>
+  <div>© 2026 Deadline. All rights reserved.</div>
+  <div>
+    <a href="/" style="color: inherit; text-decoration: none;">Home</a>
+    &nbsp;·&nbsp;
+    <a href="mailto:deadlineapp.contact@gmail.com" style="color: inherit; text-decoration: none;">Support</a>
+    &nbsp;·&nbsp;
+    <a href="/privacy.html" style="color: inherit; text-decoration: none;">Privacy Policy</a>
+  </div>
+</footer>
+
+<script>
+  function toggle(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  function copyEmail(btn) {
+    navigator.clipboard.writeText('deadlineapp.contact@gmail.com').then(() => {
+      btn.textContent = 'Copied ✓';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+</script>
+
+</body>
+</html>
