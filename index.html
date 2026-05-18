@@ -578,12 +578,243 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* ── WHATS NEXT ── */
+  .whats-next {
+    position: relative;
+    z-index: 1;
+    padding: 0 48px 120px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .whats-next-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .next-card {
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    background: var(--card);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .next-card-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    width: fit-content;
+  }
+
+  .label-v11 {
+    background: rgba(234,179,8,0.08);
+    border: 1px solid rgba(234,179,8,0.2);
+    color: var(--yellow);
+  }
+
+  .label-android {
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.2);
+    color: var(--green);
+  }
+
+  .label-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  .next-card-content h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    letter-spacing: -0.5px;
+    margin-bottom: 10px;
+    line-height: 1.1;
+  }
+
+  .next-card-content h3 em {
+    font-style: italic;
+    color: rgba(255,255,255,0.35);
+  }
+
+  .next-card-content p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* iOS NOTIFICATION MOCKUP */
+  .notif-mockup {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .notif-mockup::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(239,68,68,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .notif-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .notif-app-icon {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    background: var(--black);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .notif-app-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    flex: 1;
+  }
+
+  .notif-time {
+    font-size: 11px;
+    color: rgba(255,255,255,0.2);
+  }
+
+  .notif-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 4px;
+    letter-spacing: -0.2px;
+  }
+
+  .notif-body {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.5;
+  }
+
+  .notif-urgency-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--red);
+    animation: pulse-line 1.4s ease-in-out infinite;
+  }
+
+  /* ANDROID MOCKUP */
+  .android-mockup {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .android-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--dark);
+    opacity: 0.45;
+    filter: grayscale(1);
+    width: fit-content;
+  }
+
+  .android-badge-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .android-badge-text .small {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .android-badge-text .big {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: -0.3px;
+    line-height: 1;
+  }
+
+  .android-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .android-progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .android-progress-label span:last-child {
+    color: var(--green);
+    font-weight: 500;
+  }
+
+  .android-progress-bar {
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .android-progress-fill {
+    height: 100%;
+    width: 35%;
+    background: var(--green);
+    border-radius: 2px;
+    animation: progress-breathe 3s ease-in-out infinite;
+  }
+
+  @keyframes progress-breathe {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 768px) {
     nav { padding: 16px 24px; }
-    .section, .urgency-section, .zero-bs, .cta-section, .review-section { padding-left: 24px; padding-right: 24px; }
+    .section, .urgency-section, .zero-bs, .cta-section, .review-section, .whats-next { padding-left: 24px; padding-right: 24px; }
     .urgency-cards { grid-template-columns: repeat(2, 1fr); }
     .zero-bs-grid { grid-template-columns: 1fr; }
+    .whats-next-grid { grid-template-columns: 1fr; }
     footer { flex-direction: column; gap: 16px; text-align: center; }
     .cta-box { padding: 48px 24px; }
     .review-card { padding: 32px 24px; }
@@ -775,6 +1006,66 @@
         <div class="zero-sub">Made because the problem was real. Not a corporate product.</div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- WHATS NEXT -->
+<div class="whats-next">
+  <div class="section-label">What's next</div>
+  <div class="whats-next-grid">
+
+    <!-- NOTIFICATIONS CARD -->
+    <div class="next-card">
+      <div class="next-card-label label-v11">
+        <span class="label-dot"></span>
+        v1.1 in progress
+      </div>
+      <div class="next-card-content">
+        <h3>Push<br><em>Notifications</em></h3>
+        <p>Get reminded before a deadline hits. Deadline will tap you on the shoulder when it matters.</p>
+      </div>
+      <div class="notif-mockup">
+        <div class="notif-header">
+          <div class="notif-app-icon">&#9200;</div>
+          <div class="notif-app-name">Deadline</div>
+          <div class="notif-time">now</div>
+        </div>
+        <div class="notif-title">MIS202 &#8212; Assessment Task 3</div>
+        <div class="notif-body">Due in 3 hours. Time to focus.</div>
+        <div class="notif-urgency-bar"></div>
+      </div>
+    </div>
+
+    <!-- ANDROID CARD -->
+    <div class="next-card">
+      <div class="next-card-label label-android">
+        <span class="label-dot"></span>
+        Coming soon
+      </div>
+      <div class="next-card-content">
+        <h3>Android<br><em>Support</em></h3>
+        <p>Deadline is coming to Google Play. Same app, same philosophy. Built for every student, not just iPhone users.</p>
+      </div>
+      <div class="android-mockup">
+        <div class="android-badge">
+          <svg width="22" height="24" viewBox="0 0 48 48" fill="white"><path d="M 12 4 C 10.894531 4 10 4.894531 10 6 L 10 42 C 10 43.105469 10.894531 44 12 44 L 36 44 C 37.105469 44 38 43.105469 38 42 L 38 6 C 38 4.894531 37.105469 4 36 4 Z M 24 40 C 22.34375 40 21 38.65625 21 37 C 21 35.34375 22.34375 34 24 34 C 25.65625 34 27 35.34375 27 37 C 27 38.65625 25.65625 40 24 40 Z M 14 10 L 34 10 L 34 32 L 14 32 Z"/></svg>
+          <div class="android-badge-text">
+            <span class="small">Get it on</span>
+            <span class="big">Google Play</span>
+          </div>
+        </div>
+        <div class="android-progress">
+          <div class="android-progress-label">
+            <span>Build progress</span>
+            <span>In development</span>
+          </div>
+          <div class="android-progress-bar">
+            <div class="android-progress-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
