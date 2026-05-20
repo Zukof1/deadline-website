@@ -265,35 +265,37 @@
   .live-chip {
     display: inline-flex;
     align-items: center;
-    gap: 14px;
-    padding: 12px 18px 12px 14px;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    background: rgba(20,20,20,0.5);
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid rgba(239,68,68,0.25);
+    border-left: 4px solid var(--red);
+    border-radius: 16px;
+    background: rgba(239,68,68,0.05);
     font-family: var(--mono);
     font-size: 12px;
     letter-spacing: 1px;
     color: var(--muted-2);
     animation: fadeUp 0.8s 0.85s ease both;
+    position: relative;
+    overflow: hidden;
   }
   .live-chip .live-icon {
-    width: 28px; height: 28px;
-    border-radius: 8px;
-    background: rgba(239,68,68,0.1);
-    border: 1px solid rgba(239,68,68,0.25);
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: rgba(239,68,68,0.12);
     display: grid; place-items: center;
-    color: var(--red);
-    font-size: 14px;
+    font-size: 18px;
+    flex-shrink: 0;
   }
-  .live-chip .live-label { color: var(--muted); }
-  .live-chip .live-title { color: var(--white); font-family: 'Satoshi', sans-serif; font-weight: 500; letter-spacing: -0.2px; font-size: 13px;}
-  .live-chip .live-time { color: var(--red); font-weight: 500; }
+  .live-chip .live-label { color: var(--muted); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
+  .live-chip .live-title { color: var(--white); font-family: 'Satoshi', sans-serif; font-weight: 600; letter-spacing: -0.2px; font-size: 14px; }
+  .live-chip .live-time { color: var(--red); font-weight: 600; font-size: 13px; margin-left: 4px; }
   .live-chip .live-pulse {
-    width: 6px; height: 6px;
-    border-radius: 50%;
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
     background: var(--red);
-    box-shadow: 0 0 8px var(--red);
-    animation: pulse-dot 1.2s ease-in-out infinite;
+    animation: pulse-line 1.2s ease-in-out infinite;
   }
 
   /* ── APP STORE BADGE ── */
@@ -537,61 +539,79 @@
   }
   .app-card {
     position: relative;
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px 22px 20px;
-    display: grid;
-    grid-template-columns: 28px 1fr auto;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-left-width: 4px;
+    border-radius: 18px;
+    padding: 16px 18px;
+    display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 14px;
     overflow: hidden;
-    transition: transform .25s ease, border-color .25s ease;
+    transition: transform .25s ease;
   }
   .app-card:hover { transform: translateY(-1px); }
-  .app-card[data-color="green"] { color: var(--green); }
-  .app-card[data-color="yellow"] { color: var(--yellow); }
-  .app-card[data-color="orange"] { color: var(--orange); }
-  .app-card[data-color="red"] { color: var(--red); }
 
-  .ac-circle {
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    border: 1.5px solid currentColor;
-    opacity: 0.75;
+  .app-card[data-color="green"] { border-left-color: var(--green); border-color: rgba(34,197,94,0.2); background: rgba(34,197,94,0.04); }
+  .app-card[data-color="yellow"] { border-left-color: var(--yellow); border-color: rgba(234,179,8,0.2); background: rgba(234,179,8,0.04); }
+  .app-card[data-color="orange"] { border-left-color: var(--orange); border-color: rgba(249,115,22,0.2); background: rgba(249,115,22,0.04); }
+  .app-card[data-color="red"] { border-left-color: var(--red); border-color: rgba(239,68,68,0.25); background: rgba(239,68,68,0.05); }
+
+  .ac-icon {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
   }
-  .ac-body { min-width: 0; }
+  .app-card[data-color="green"] .ac-icon { background: rgba(34,197,94,0.12); }
+  .app-card[data-color="yellow"] .ac-icon { background: rgba(234,179,8,0.12); }
+  .app-card[data-color="orange"] .ac-icon { background: rgba(249,115,22,0.12); }
+  .app-card[data-color="red"] .ac-icon { background: rgba(239,68,68,0.12); }
+
+  .ac-body { min-width: 0; flex: 1; }
   .ac-title {
     color: var(--white);
     font-family: 'Satoshi', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    letter-spacing: -0.3px;
-    margin: 0 0 4px;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: -0.2px;
+    margin: 0 0 3px;
     line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .ac-due {
-    color: var(--muted);
+    color: var(--muted-2);
     font-size: 12px;
+    font-family: var(--mono);
     letter-spacing: 0.2px;
   }
   .ac-time {
-    color: currentColor;
     font-family: var(--mono);
     font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.5px;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
+    flex-shrink: 0;
   }
+  .app-card[data-color="green"] .ac-time { color: var(--green); }
+  .app-card[data-color="yellow"] .ac-time { color: var(--yellow); }
+  .app-card[data-color="orange"] .ac-time { color: var(--orange); }
+  .app-card[data-color="red"] .ac-time { color: var(--red); }
+
   .ac-line {
     position: absolute;
     bottom: 0; left: 0; right: 0;
     height: 2px;
-    background: currentColor;
-    opacity: 0.95;
+    opacity: 0.9;
   }
-  .app-card[data-color="red"] .ac-line { animation: pulse-line 1.2s ease-in-out infinite; }
+  .app-card[data-color="green"] .ac-line { background: var(--green); }
+  .app-card[data-color="yellow"] .ac-line { background: var(--yellow); }
+  .app-card[data-color="orange"] .ac-line { background: var(--orange); }
+  .app-card[data-color="red"] .ac-line { background: var(--red); animation: pulse-line 1.2s ease-in-out infinite; }
 
   /* split-flap reel */
   .flip {
@@ -627,16 +647,6 @@
     100% { transform: translateY(0);     opacity: 1; }
   }
 
-  @media (max-width: 700px) {
-    .board-wrap { padding: 36px 20px; }
-    .app-mock { padding: 22px; }
-    .app-mock-subject { font-size: 24px; }
-    .app-card { padding: 14px 16px; grid-template-columns: 22px 1fr auto; gap: 12px; }
-    .ac-title { font-size: 14px; }
-    .ac-due { font-size: 11px; }
-    .ac-time { font-size: 11px; }
-    .flip { min-width: 6ch; }
-  }
 
   /* ── SECTIONS ── */
   .section {
@@ -694,69 +704,411 @@
   /* ── FEATURES ── */
   .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1px;
-    background: var(--border);
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 12px;
+  }
+
+  /* F/01 — hero card, full width */
+  .fc-hero {
+    grid-column: 1 / -1;
+    background: var(--card);
     border: 1px solid var(--border);
     border-radius: 20px;
+    padding: 40px 44px;
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 48px;
+    align-items: center;
     overflow: hidden;
-  }
-
-  .feature-card {
-    background: var(--card);
-    padding: 44px 36px 40px;
-    transition: background 0.25s;
     position: relative;
-    overflow: hidden;
   }
-  .feature-card::before {
+  .fc-hero::before {
     content: '';
     position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--green), transparent);
-    transition: left 0.6s ease;
+    inset: 0;
+    background: radial-gradient(ellipse at 80% 50%, rgba(34,197,94,0.06) 0%, transparent 60%);
+    pointer-events: none;
   }
-  .feature-card:hover { background: var(--card-2); }
-  .feature-card:hover::before { left: 100%; }
+  .fc-hero-text { position: relative; z-index: 1; }
+  .fc-hero-demo { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 8px; }
 
-  .feature-num {
+  /* urgency shift demo inside F/01 */
+  .fhd-card {
+    border-radius: 14px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.6s ease;
+    border: 1px solid;
+    border-left-width: 4px;
+  }
+  .fhd-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; flex-shrink: 0;
+    transition: background 0.6s;
+  }
+  .fhd-name { font-size: 14px; font-weight: 600; color: var(--white); font-family: 'Satoshi', sans-serif; }
+  .fhd-sub { font-size: 11px; color: var(--muted-2); font-family: var(--mono); margin-top: 2px; }
+  .fhd-time { margin-left: auto; font-family: var(--mono); font-size: 13px; font-weight: 600; flex-shrink: 0; transition: color 0.6s; font-variant-numeric: tabular-nums; }
+  .fhd-line { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; transition: background 0.6s; }
+  .fhd-card.is-red .fhd-line { animation: pulse-line 1.2s ease-in-out infinite; }
+
+  .fhd-card.is-green { background: rgba(34,197,94,0.05); border-color: rgba(34,197,94,0.2); border-left-color: var(--green); }
+  .fhd-card.is-green .fhd-icon { background: rgba(34,197,94,0.12); }
+  .fhd-card.is-green .fhd-time { color: var(--green); }
+  .fhd-card.is-green .fhd-line { background: var(--green); }
+
+  .fhd-card.is-yellow { background: rgba(234,179,8,0.05); border-color: rgba(234,179,8,0.2); border-left-color: var(--yellow); }
+  .fhd-card.is-yellow .fhd-icon { background: rgba(234,179,8,0.12); }
+  .fhd-card.is-yellow .fhd-time { color: var(--yellow); }
+  .fhd-card.is-yellow .fhd-line { background: var(--yellow); }
+
+  .fhd-card.is-orange { background: rgba(249,115,22,0.05); border-color: rgba(249,115,22,0.2); border-left-color: var(--orange); }
+  .fhd-card.is-orange .fhd-icon { background: rgba(249,115,22,0.12); }
+  .fhd-card.is-orange .fhd-time { color: var(--orange); }
+  .fhd-card.is-orange .fhd-line { background: var(--orange); }
+
+  .fhd-card.is-red { background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.25); border-left-color: var(--red); }
+  .fhd-card.is-red .fhd-icon { background: rgba(239,68,68,0.12); }
+  .fhd-card.is-red .fhd-time { color: var(--red); }
+  .fhd-card.is-red .fhd-line { background: var(--red); }
+
+  /* standard secondary feature cards */
+  .fc {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 28px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s, border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .fc:hover { background: var(--card-2); border-color: var(--border-2); }
+
+  .fc-num {
     font-family: var(--mono);
     font-size: 10px;
     letter-spacing: 1.5px;
     color: var(--muted);
-    margin-bottom: 28px;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
     gap: 8px;
   }
-  .feature-num::after {
-    content: ''; flex: 1; height: 1px; background: var(--border-2);
+  .fc-num::after { content: ''; flex: 1; height: 1px; background: var(--border-2); }
+
+  .fc-title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--white);
+    margin-bottom: 8px;
+    font-family: 'Satoshi', sans-serif;
+  }
+  .fc-desc {
+    font-size: 13px;
+    color: var(--muted-2);
+    line-height: 1.7;
+    flex: 1;
+  }
+  .fc-visual {
+    margin-top: 24px;
   }
 
-  .feature-icon {
-    width: 44px; height: 44px;
+  /* F/02 — colour swatches */
+  .fc-swatches {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .fc-swatch {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* F/03 — complete & undo */
+  .fc-task {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+  }
+  .fc-task.done { opacity: 0.45; }
+  .fc-task.done .fc-task-name { text-decoration: line-through; color: var(--muted); }
+  .fc-check {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-2);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+  }
+  .fc-task.done .fc-check { background: var(--green); border-color: var(--green); color: #000; }
+  .fc-task-name { flex: 1; color: var(--white); }
+  .fc-undo {
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--green);
+    text-transform: uppercase;
+    padding: 5px 10px;
+    background: rgba(34,197,94,0.08);
+    border-radius: 6px;
+    border: 1px solid rgba(34,197,94,0.2);
+    width: fit-content;
+  }
+
+  /* F/04 — live seconds */
+  .fc-hms {
+    display: flex;
+    gap: 6px;
+    align-items: baseline;
+  }
+  .fc-hms-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .fc-hms-val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    font-weight: 400;
+    letter-spacing: -2px;
+    color: var(--red);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .fc-hms-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .fc-hms-sep {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--border-2);
+    margin-bottom: 12px;
+  }
+
+  /* F/05 — swipe to delete */
+  .fc-swipe-wrap {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 56px;
+  }
+  .fc-swipe-delete {
+    position: absolute;
+    inset: 0;
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.25);
     border-radius: 12px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    margin-bottom: 20px;
+    justify-content: flex-end;
+    padding-right: 16px;
+    font-size: 18px;
+  }
+  .fc-swipe-card {
+    position: absolute;
+    inset: 0;
     background: var(--dark);
     border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 14px;
+    transform: translateX(0);
+    animation: swipe-demo 3.5s ease-in-out infinite;
   }
-
-  .feature-title {
-    font-size: 17px;
-    font-weight: 500;
-    margin-bottom: 12px;
-    letter-spacing: -0.3px;
+  @keyframes swipe-demo {
+    0%,30%  { transform: translateX(0); }
+    55%,75% { transform: translateX(-68px); }
+    90%,100%{ transform: translateX(0); }
   }
-
-  .feature-desc {
-    font-size: 14px;
+  .fc-swipe-icon { font-size: 18px; flex-shrink: 0; }
+  .fc-swipe-name { font-size: 13px; font-weight: 600; color: var(--white); font-family: 'Satoshi', sans-serif; }
+  .fc-swipe-sub { font-size: 11px; color: var(--muted-2); font-family: var(--mono); margin-top: 1px; }
+  .fc-swipe-hint {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 10px;
+    text-align: right;
+  }
+  .fc-clear-row { margin-top: 14px; }
+  .fc-clear-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1px;
     color: var(--muted-2);
-    line-height: 1.7;
+    background: var(--dark);
+    border: 1px solid var(--border-2);
+    border-radius: 8px;
+    padding: 6px 10px;
+  }
+
+  /* F/07 — notifications */
+  .fc-notif-cycle {
+    position: relative;
+    height: 96px;
+    overflow: hidden;
+  }
+  .fc-notif {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 12px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .fc-notif-slide {
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+  }
+  .fc-notif-slide.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .fc-notif-slide.exit {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+  .fc-notif-dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  .fc-notif-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--border-2);
+    transition: background 0.3s, transform 0.3s;
+  }
+  .fc-notif-dot.active {
+    background: var(--muted-2);
+    transform: scale(1.3);
+  }
+  .fc-notif-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .fc-notif-icon {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    background: var(--black);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .fc-notif-app {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    flex: 1;
+    font-family: 'Satoshi', sans-serif;
+  }
+  .fc-notif-time {
+    font-size: 10px;
+    color: rgba(255,255,255,0.2);
+    font-family: var(--mono);
+    letter-spacing: 0.5px;
+  }
+  .fc-notif-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 2px;
+    font-family: 'Satoshi', sans-serif;
+    letter-spacing: -0.2px;
+  }
+  .fc-notif-body {
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.5;
+  }
+  .fc-notif-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--red);
+    animation: pulse-line 1.4s ease-in-out infinite;
+  }
+
+  /* F/06 — offline */
+  .fc-offline-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .fc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    width: fit-content;
+  }
+  .fc-badge.good { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); color: var(--green); }
+  .fc-badge.bad { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15); color: var(--muted); text-decoration: line-through; }
+  .fc-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+  @media (max-width: 900px) {
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .fc-hero { grid-column: 1 / -1; grid-template-columns: 1fr; gap: 28px; }
+  }
+  @media (max-width: 600px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .fc-hero { padding: 28px 24px; }
+    .fc { padding: 28px 22px; }
   }
 
   /* ── URGENCY DEMO (auto-playing) ── */
@@ -1672,10 +2024,17 @@
   @media (max-width: 768px) {
     nav { padding: 16px 24px; }
     .nav-time { display: none; }
-    .section, .urgency-section, .zero-bs, .cta-section, .review-section, .whats-next, .stats-band, .demo-section { padding-left: 24px; padding-right: 24px; }
-    .urgency-cards { grid-template-columns: repeat(2, 1fr); }
-    .zero-bs-grid { grid-template-columns: 1fr; }
+    /* hide secondary hero buttons on mobile — keep only App Store */
+    .hero-actions .ghost-btn:last-child { display: none; }
+    /* sections padding */
+    .section, .urgency-section, .zero-bs, .cta-section, .review-section,
+    .whats-next, .stats-band, .demo-section, .calculator-section,
+    .sandbox-teaser, .sandbox-teaser-inner { padding-left: 24px; padding-right: 24px; }
+    .sandbox-teaser { padding: 40px 24px; }
+    .sandbox-teaser-inner { padding: 32px 24px; grid-template-columns: 1fr; }
+    .sandbox-teaser-right { display: none; }
     .whats-next-grid { grid-template-columns: 1fr; }
+    .urgency-cards { grid-template-columns: repeat(2, 1fr); }
     .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
     .cta-box { padding: 64px 28px; }
     .review-card { padding: 36px 28px; }
@@ -1683,6 +2042,39 @@
     .section-head { margin-bottom: 40px; }
     .demo-left { padding: 32px 28px; }
     .demo-right { padding: 24px; }
+    /* features hero card stacks */
+    .fc-hero { grid-template-columns: 1fr; gap: 24px; padding: 28px 24px; }
+    .fc-hero-demo .fhd-card { padding: 12px 14px; }
+    .fhd-name { font-size: 13px; }
+    .fhd-time { font-size: 12px; }
+    /* HMS numbers scale down */
+    .fc-hms-val { font-size: 28px; }
+    /* live chip wraps cleanly */
+    .live-chip { flex-wrap: wrap; max-width: 280px; }
+    /* calc */
+    .calc-right { grid-template-columns: 1fr; }
+    .calc-container { padding: 28px 20px; }
+    /* board */
+    .board-wrap { padding: 36px 20px; }
+    .app-mock { padding: 22px; }
+    .app-mock-subject { font-size: 24px; }
+    .app-card { padding: 12px 14px; gap: 10px; }
+    .ac-icon { width: 34px; height: 34px; font-size: 16px; border-radius: 10px; }
+    .ac-title { font-size: 14px; }
+    .ac-due { font-size: 11px; }
+    .ac-time { font-size: 11px; }
+    .flip { min-width: 6ch; }
+  }
+  @media (max-width: 480px) {
+    .hero h1 { letter-spacing: -2px; }
+    .fc-hms-val { font-size: 22px; }
+    .fc-hms-sep { font-size: 20px; }
+    .urgency-cards { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .live-chip .live-time { font-size: 12px; }
+    /* swipe card text wraps */
+    .fc-swipe-name { font-size: 12px; }
+    .fc-swipe-sub { font-size: 10px; }
   }
   /* ── TWEAKS: MOOD / PALETTE / ATMOSPHERE ── */
 
@@ -2238,12 +2630,11 @@
     </div>
 
     <div class="live-chip" aria-hidden="true">
-      <div class="live-icon">⏱</div>
+      <div class="live-icon">⚖️</div>
       <div>
-        <div class="live-label" style="font-size:10px;letter-spacing:2px;">LIVE DEMO</div>
-        <div class="live-title">Law Case Study — Final draft</div>
+        <div class="live-label">Due in</div>
+        <div class="live-title">Law Case Study</div>
       </div>
-      <div style="width:1px;height:24px;background:var(--border-2);"></div>
       <div class="live-time"><span id="liveTimer">04H 23M 11S</span></div>
       <div class="live-pulse"></div>
     </div>
@@ -2284,7 +2675,7 @@
         </div>
         <div class="app-cards">
           <article class="app-card" data-color="red" data-seconds="74408" data-fmt="hms" data-live="1">
-            <div class="ac-circle"></div>
+            <div class="ac-icon">📝</div>
             <div class="ac-body">
               <h4 class="ac-title">Case Study</h4>
               <div class="ac-due">Due: 13 May 2026 @ 11:59pm</div>
@@ -2293,7 +2684,7 @@
             <div class="ac-line"></div>
           </article>
           <article class="app-card" data-color="yellow" data-seconds="331200" data-fmt="dh">
-            <div class="ac-circle"></div>
+            <div class="ac-icon">📊</div>
             <div class="ac-body">
               <h4 class="ac-title">Supply and Demand Report</h4>
               <div class="ac-due">Due: 16 May 2026 @ 11:59pm</div>
@@ -2302,7 +2693,7 @@
             <div class="ac-line"></div>
           </article>
           <article class="app-card" data-color="green" data-seconds="590400" data-fmt="dleft">
-            <div class="ac-circle"></div>
+            <div class="ac-icon">📄</div>
             <div class="ac-body">
               <h4 class="ac-title">Market Structure Essay</h4>
               <div class="ac-due">Due: 19 May 2026 @ 11:59pm</div>
@@ -2323,46 +2714,240 @@
       <div class="section-label">Features · 01</div>
       <h2 class="section-title" style="margin-top:24px;">Built for <em>exactly one thing</em>.</h2>
     </div>
-    <p class="section-aside">Six small ideas that make the difference between knowing a deadline and feeling it.</p>
+    <p class="section-aside">Seven ideas that make the difference between knowing a deadline and feeling it.</p>
   </div>
 
   <div class="features-grid">
-    <div class="feature-card reveal">
-      <div class="feature-num">F / 01</div>
-      <div class="feature-icon">⏱</div>
-      <div class="feature-title">Live Urgency Countdown</div>
-      <div class="feature-desc">Every assignment shows a live countdown that shifts from green to red as the deadline approaches. You always know exactly how much time you have.</div>
+
+    <!-- F/01 — hero card: live urgency countdown -->
+    <div class="fc-hero reveal">
+      <div class="fc-hero-text">
+        <div class="fc-num">F / 01</div>
+        <div class="fc-title" style="font-size:22px;margin-bottom:14px;">Live Urgency Countdown</div>
+        <div class="fc-desc" style="font-size:14px;">Every assignment shifts colour as the deadline closes in. Green means clear. Red means now. You always know exactly where you stand — without thinking about it.</div>
+        <div style="margin-top:20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <span style="font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--green);background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);padding:4px 10px;border-radius:6px;">5+ DAYS</span>
+          <span style="color:var(--border-2);font-size:12px;">→</span>
+          <span style="font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--yellow);background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);padding:4px 10px;border-radius:6px;">2–4 DAYS</span>
+          <span style="color:var(--border-2);font-size:12px;">→</span>
+          <span style="font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--orange);background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);padding:4px 10px;border-radius:6px;">24–48H</span>
+          <span style="color:var(--border-2);font-size:12px;">→</span>
+          <span style="font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--red);background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);padding:4px 10px;border-radius:6px;">CRITICAL</span>
+        </div>
+      </div>
+      <div class="fc-hero-demo" id="fhDemo">
+        <div class="fhd-card is-green" id="fhd-0">
+          <div class="fhd-icon">📝</div>
+          <div><div class="fhd-name">Marketing Essay</div><div class="fhd-sub">MKT301</div></div>
+          <div class="fhd-time" id="fhdt-0">6D LEFT</div>
+          <div class="fhd-line"></div>
+        </div>
+        <div class="fhd-card is-yellow" id="fhd-1">
+          <div class="fhd-icon">📊</div>
+          <div><div class="fhd-name">Finance Report</div><div class="fhd-sub">FIN202</div></div>
+          <div class="fhd-time" id="fhdt-1">3D 04H</div>
+          <div class="fhd-line"></div>
+        </div>
+        <div class="fhd-card is-orange" id="fhd-2">
+          <div class="fhd-icon">🧠</div>
+          <div><div class="fhd-name">Psychology Quiz</div><div class="fhd-sub">PSY101</div></div>
+          <div class="fhd-time" id="fhdt-2">1D 06H</div>
+          <div class="fhd-line"></div>
+        </div>
+        <div class="fhd-card is-red" id="fhd-3">
+          <div class="fhd-icon">⚖️</div>
+          <div><div class="fhd-name">Law Case Study</div><div class="fhd-sub">LAW401</div></div>
+          <div class="fhd-time" id="fhdt-3">04H 23M 11S</div>
+          <div class="fhd-line"></div>
+        </div>
+      </div>
     </div>
-    <div class="feature-card reveal delay-1">
-      <div class="feature-num">F / 02</div>
-      <div class="feature-icon">📚</div>
-      <div class="feature-title">Subjects with Colours &amp; Icons</div>
-      <div class="feature-desc">Organise assignments by subject with custom colours and icons. Your dashboard tells the full story at a glance.</div>
+
+    <!-- F/02 — subjects with colours -->
+    <div class="fc reveal delay-1">
+      <div class="fc-num">F / 02</div>
+      <div class="fc-title">Subjects with Colours &amp; Icons</div>
+      <div class="fc-desc">Eight signature colours. Twelve icons. Every subject gets its own identity — so your dashboard tells the story at a glance.</div>
+      <div class="fc-visual">
+        <div class="fc-swatches">
+          <div class="fc-swatch" style="background:#5E5CE6;"></div>
+          <div class="fc-swatch" style="background:#FF3B30;"></div>
+          <div class="fc-swatch" style="background:#FF9500;"></div>
+          <div class="fc-swatch" style="background:#34C759;"></div>
+          <div class="fc-swatch" style="background:#30B0C7;"></div>
+          <div class="fc-swatch" style="background:#007AFF;"></div>
+          <div class="fc-swatch" style="background:#FF2D55;"></div>
+          <div class="fc-swatch" style="background:#8E8E93;"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+          <span style="font-size:18px;">📚</span><span style="font-size:18px;">🧪</span><span style="font-size:18px;">🌐</span>
+          <span style="font-size:18px;">💻</span><span style="font-size:18px;">🎨</span><span style="font-size:18px;">💼</span>
+          <span style="font-size:18px;">🎵</span><span style="font-size:18px;">📈</span>
+        </div>
+      </div>
     </div>
-    <div class="feature-card reveal delay-2">
-      <div class="feature-num">F / 03</div>
-      <div class="feature-icon">↩</div>
-      <div class="feature-title">Complete &amp; Undo</div>
-      <div class="feature-desc">Mark assignments done with one tap. Accidentally completed something? Undo it anytime — no time limit, no questions asked.</div>
+
+    <!-- F/03 — complete & undo -->
+    <div class="fc reveal delay-2">
+      <div class="fc-num">F / 03</div>
+      <div class="fc-title">Complete &amp; Undo</div>
+      <div class="fc-desc">Tap the circle to mark done. Tap again to bring it back. No time limit, no confirmation — just a toggle.</div>
+      <div class="fc-visual">
+        <div class="fc-task" id="fcTask1">
+          <div class="fc-check" id="fcCheck1" onclick="toggleTask(1)" style="cursor:pointer;"></div>
+          <div class="fc-task-name" id="fcName1">Research proposal draft</div>
+        </div>
+        <div class="fc-task" id="fcTask2" style="margin-top:8px;">
+          <div class="fc-check" id="fcCheck2" onclick="toggleTask(2)" style="cursor:pointer;"></div>
+          <div class="fc-task-name" id="fcName2">Literature review</div>
+        </div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-top:14px;text-transform:uppercase;">Tap a circle to try it</div>
+      </div>
     </div>
-    <div class="feature-card reveal delay-3">
-      <div class="feature-num">F / 04</div>
-      <div class="feature-icon">⚙</div>
-      <div class="feature-title">Live Seconds Countdown</div>
-      <div class="feature-desc">Toggle a live ticking H M S countdown for assignments under 24 hours. Or extend it to all assignments for maximum urgency.</div>
+
+    <!-- F/04 — live seconds -->
+    <div class="fc reveal delay-3">
+      <div class="fc-num">F / 04</div>
+      <div class="fc-title">Live Seconds Countdown</div>
+      <div class="fc-desc">Toggle a ticking H M S counter for assignments under 24 hours. Every second is visible.</div>
+      <div class="fc-visual">
+        <div class="fc-hms">
+          <div class="fc-hms-unit">
+            <div class="fc-hms-val" id="fcH">04</div>
+            <div class="fc-hms-label">H</div>
+          </div>
+          <div class="fc-hms-sep">:</div>
+          <div class="fc-hms-unit">
+            <div class="fc-hms-val" id="fcM">23</div>
+            <div class="fc-hms-label">M</div>
+          </div>
+          <div class="fc-hms-sep">:</div>
+          <div class="fc-hms-unit">
+            <div class="fc-hms-val" id="fcS">11</div>
+            <div class="fc-hms-label">S</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="feature-card reveal delay-4">
-      <div class="feature-num">F / 05</div>
-      <div class="feature-icon">👻</div>
-      <div class="feature-title">Satisfying When You're Done</div>
-      <div class="feature-desc">Clear your last assignment and the app feels it. A quiet moment that makes finishing feel like something — not just an empty list.</div>
+
+    <!-- F/05 — swipe to delete + clear all -->
+    <div class="fc reveal delay-4">
+      <div class="fc-num">F / 05</div>
+      <div class="fc-title">Swipe to Delete</div>
+      <div class="fc-desc">Swipe an assignment to remove it. Or hit Clear All Data in Settings for a clean slate at the start of a new semester.</div>
+      <div class="fc-visual">
+        <div class="fc-swipe-wrap">
+          <div class="fc-swipe-delete">
+            <span>🗑</span>
+          </div>
+          <div class="fc-swipe-card" id="fcSwipeCard">
+            <div class="fc-swipe-icon">📝</div>
+            <div>
+              <div class="fc-swipe-name">Literature Review</div>
+              <div class="fc-swipe-sub">Due: 20 May @ 11:59pm</div>
+            </div>
+          </div>
+        </div>
+        <div class="fc-swipe-hint" id="fcSwipeHint">← swipe to delete</div>
+        <div class="fc-clear-row">
+          <div class="fc-clear-badge">⚙ Settings → Clear All Data</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Fresh start every semester</div>
+        </div>
+      </div>
     </div>
-    <div class="feature-card reveal delay-5">
-      <div class="feature-num">F / 06</div>
-      <div class="feature-icon">📱</div>
-      <div class="feature-title">Works Offline, Always</div>
-      <div class="feature-desc">No internet required. Your data lives on your device. No account, no sync, no cloud. Just your assignments, always there.</div>
+
+    <!-- F/06 — works offline -->
+    <div class="fc reveal delay-5">
+      <div class="fc-num">F / 06</div>
+      <div class="fc-title">Works Offline, Always</div>
+      <div class="fc-desc">No internet required. Your data lives on your device. Open the app and it's there.</div>
+      <div class="fc-visual">
+        <div class="fc-offline-badges">
+          <div class="fc-badge good"><div class="fc-badge-dot"></div>No account needed</div>
+          <div class="fc-badge good"><div class="fc-badge-dot"></div>No internet needed</div>
+          <div class="fc-badge good"><div class="fc-badge-dot"></div>No data collected</div>
+          <div class="fc-badge good"><div class="fc-badge-dot"></div>No ads. Ever.</div>
+        </div>
+      </div>
     </div>
+
+    <!-- F/07 — push notifications -->
+    <div class="fc reveal delay-6">
+      <div class="fc-num">F / 07</div>
+      <div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <div class="fc-title" style="margin-bottom:0;">Push Notifications</div>
+        <span style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:var(--yellow);background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);padding:3px 8px;border-radius:6px;">v1.1</span>
+      </div>
+      <div class="fc-desc">Deadline taps you on the shoulder before it hits. Set a reminder and never be caught off guard.</div>
+      <div class="fc-visual">
+        <div class="fc-notif-cycle" id="fcNotifCycle">
+          <!-- notification 1: 7 days -->
+          <div class="fc-notif fc-notif-slide active" id="fcn-0">
+            <div class="fc-notif-header">
+              <div class="fc-notif-icon">⏱</div>
+              <div class="fc-notif-app">Deadline</div>
+              <div class="fc-notif-time">7d before</div>
+            </div>
+            <div class="fc-notif-title">LAW401 — Case Study</div>
+            <div class="fc-notif-body">📚 Due in 7 days. Get ahead of it.</div>
+            <div class="fc-notif-bar" style="background:var(--green);animation:none;opacity:0.7;"></div>
+          </div>
+          <!-- notification 2: 4 days -->
+          <div class="fc-notif fc-notif-slide" id="fcn-1">
+            <div class="fc-notif-header">
+              <div class="fc-notif-icon">⏱</div>
+              <div class="fc-notif-app">Deadline</div>
+              <div class="fc-notif-time">4d before</div>
+            </div>
+            <div class="fc-notif-title">LAW401 — Case Study</div>
+            <div class="fc-notif-body">📖 Due in 4 days. Make a start.</div>
+            <div class="fc-notif-bar" style="background:var(--green);animation:none;opacity:0.5;"></div>
+          </div>
+          <!-- notification 3: 2 days -->
+          <div class="fc-notif fc-notif-slide" id="fcn-2">
+            <div class="fc-notif-header">
+              <div class="fc-notif-icon">⏱</div>
+              <div class="fc-notif-app">Deadline</div>
+              <div class="fc-notif-time">2d before</div>
+            </div>
+            <div class="fc-notif-title">LAW401 — Case Study</div>
+            <div class="fc-notif-body">⚠️ Due in 2 days. Time to start.</div>
+            <div class="fc-notif-bar" style="background:var(--yellow);animation:none;opacity:0.7;"></div>
+          </div>
+          <!-- notification 4: 24 hours -->
+          <div class="fc-notif fc-notif-slide" id="fcn-3">
+            <div class="fc-notif-header">
+              <div class="fc-notif-icon">⏱</div>
+              <div class="fc-notif-app">Deadline</div>
+              <div class="fc-notif-time">24h before</div>
+            </div>
+            <div class="fc-notif-title">LAW401 — Case Study</div>
+            <div class="fc-notif-body">🔴 Due TOMORROW. Don't leave it.</div>
+            <div class="fc-notif-bar" style="background:var(--orange);animation:none;opacity:0.9;"></div>
+          </div>
+          <!-- notification 5: 1 hour -->
+          <div class="fc-notif fc-notif-slide" id="fcn-4">
+            <div class="fc-notif-header">
+              <div class="fc-notif-icon">⏱</div>
+              <div class="fc-notif-app">Deadline</div>
+              <div class="fc-notif-time">1h before</div>
+            </div>
+            <div class="fc-notif-title">LAW401 — Case Study</div>
+            <div class="fc-notif-body">🚨 FINAL HOUR. Due in 1 hour!</div>
+            <div class="fc-notif-bar"></div>
+          </div>
+        </div>
+        <!-- step dots -->
+        <div class="fc-notif-dots">
+          <div class="fc-notif-dot active" id="fcd-0"></div>
+          <div class="fc-notif-dot" id="fcd-1"></div>
+          <div class="fc-notif-dot" id="fcd-2"></div>
+          <div class="fc-notif-dot" id="fcd-3"></div>
+          <div class="fc-notif-dot" id="fcd-4"></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -3136,6 +3721,89 @@
 
     // announce availability after listener is wired
     window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+  })();
+
+  /* ─── Features section: live urgency cards + HMS ticker ─── */
+  (function () {
+    function pad(n) { return String(n).padStart(2,'0'); }
+
+    /* Task toggle for F/03 */
+    window.toggleTask = function(id) {
+      const task  = document.getElementById('fcTask'  + id);
+      const check = document.getElementById('fcCheck' + id);
+      const name  = document.getElementById('fcName'  + id);
+      if (!task) return;
+      const done = task.classList.toggle('done');
+      check.textContent  = done ? '✓' : '';
+      check.style.background   = done ? 'var(--green)' : '';
+      check.style.borderColor  = done ? 'var(--green)' : '';
+      check.style.color        = done ? '#000' : '';
+      name.style.textDecoration = done ? 'line-through' : '';
+      name.style.color          = done ? 'var(--muted)' : '';
+      task.style.opacity        = done ? '0.45' : '1';
+    };
+
+    /* Notification cycle for F/07 — cycles through 4 scheduled reminders */
+    let notifIdx = 0;
+    const NOTIF_COUNT = 5;
+    function cycleNotif() {
+      const prev = notifIdx;
+      notifIdx = (notifIdx + 1) % NOTIF_COUNT;
+      const prevEl = document.getElementById('fcn-' + prev);
+      const nextEl = document.getElementById('fcn-' + notifIdx);
+      const prevDot = document.getElementById('fcd-' + prev);
+      const nextDot = document.getElementById('fcd-' + notifIdx);
+      if (!prevEl || !nextEl) return;
+      prevEl.classList.add('exit');
+      prevEl.classList.remove('active');
+      nextEl.classList.add('active');
+      nextEl.classList.remove('exit');
+      if (prevDot) prevDot.classList.remove('active');
+      if (nextDot) nextDot.classList.add('active');
+      setTimeout(() => { prevEl.classList.remove('exit'); }, 450);
+    }
+    setInterval(cycleNotif, 2800);
+    let hmsS = 4*3600 + 23*60 + 11;
+    function tickHMS() {
+      hmsS = Math.max(0, hmsS - 1);
+      const h = Math.floor(hmsS/3600);
+      const m = Math.floor((hmsS%3600)/60);
+      const s = hmsS%60;
+      const eH = document.getElementById('fcH');
+      const eM = document.getElementById('fcM');
+      const eS = document.getElementById('fcS');
+      if (eH) eH.textContent = pad(h);
+      if (eM) eM.textContent = pad(m);
+      if (eS) eS.textContent = pad(s);
+      /* also keep fhd-3 in sync */
+      const t3 = document.getElementById('fhdt-3');
+      if (t3) t3.textContent = pad(h)+'H '+pad(m)+'M '+pad(s)+'S';
+    }
+    setInterval(tickHMS, 1000);
+
+    /* Feature hero cards: cycle through urgency states every 3s */
+    const STATES = [
+      { cls:'is-green',  times:['6D LEFT','3D 04H','1D 06H'] },
+      { cls:'is-yellow', times:['5D 12H', '2D 08H','18H 30M'] },
+      { cls:'is-orange', times:['4D 02H', '1D 22H','32H 14M'] },
+      { cls:'is-red',    times:['3D 06H', '22H 50M','4H 23M'] },
+    ];
+    /* cards 0-2 cycle independently, card 3 is always red + live */
+    const offsets = [0, 1, 2];
+    let cycle = 0;
+    function stepCards() {
+      cycle++;
+      offsets.forEach((off, i) => {
+        const idx = (cycle + off) % STATES.length;
+        const card = document.getElementById('fhd-' + i);
+        const timeEl = document.getElementById('fhdt-' + i);
+        if (!card || !timeEl) return;
+        STATES.forEach(s => card.classList.remove(s.cls));
+        card.classList.add(STATES[idx].cls);
+        timeEl.textContent = STATES[idx].times[i];
+      });
+    }
+    setInterval(stepCards, 3000);
   })();
 
   /* ─── Friction Calculator ─── */
