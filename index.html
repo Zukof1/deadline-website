@@ -1953,6 +1953,229 @@
     *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   }
 </style>
+<style>
+  /* ─── SANDBOX TEASER ─── */
+  .sandbox-teaser {
+    position: relative;
+    z-index: 1;
+    padding: 60px 48px;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .sandbox-teaser-inner {
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: var(--card);
+    padding: 56px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .sandbox-teaser-right { display: flex; justify-content: center; }
+  .sandbox-preview-card {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    width: 100%;
+    max-width: 320px;
+  }
+  .spc-step {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .spc-input {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--white);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .spc-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--green);
+    border-radius: 1px;
+    animation: spc-blink 1s steps(1) infinite;
+    vertical-align: -1px;
+    margin-left: 2px;
+  }
+  @keyframes spc-blink { 0%,49%{opacity:1;} 50%,100%{opacity:0;} }
+  .spc-colors { display: flex; gap: 8px; }
+  .spc-swatch {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 2.5px solid transparent;
+    flex-shrink: 0;
+  }
+  .spc-card {
+    position: relative;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(94,92,230,0.25);
+    border-left: 4px solid #5E5CE6;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    overflow: hidden;
+  }
+  .spc-card-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  @media (max-width: 900px) {
+    .sandbox-teaser-inner { grid-template-columns: 1fr; }
+    .sandbox-teaser-right { display: none; }
+  }
+  @media (max-width: 768px) {
+    .sandbox-teaser { padding-left: 24px; padding-right: 24px; }
+  }
+
+  .calculator-section {
+    position: relative;
+    z-index: 1;
+    padding: 60px 48px 60px;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .calc-container {
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: var(--card);
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .calc-left {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .calc-slider-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .calc-slider-header {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted-2);
+  }
+  .calc-slider-header span strong { color: var(--white); }
+  .calc-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--border-2);
+    outline: none;
+    cursor: pointer;
+  }
+  .calc-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--green);
+    border: 3px solid var(--card);
+    box-shadow: 0 0 10px rgba(34,197,94,0.4);
+    transition: transform 0.15s;
+  }
+  .calc-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+  .calc-right {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .calc-card {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .calc-card:hover { border-color: var(--border-2); transform: translateY(-2px); }
+  .calc-card.is-deadline {
+    border-color: rgba(34,197,94,0.2);
+    background: linear-gradient(180deg, var(--dark) 0%, rgba(34,197,94,0.02) 100%);
+  }
+  .calc-card.is-deadline:hover { border-color: rgba(34,197,94,0.5); }
+  .calc-card-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .calc-metric {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(36px, 5vw, 52px);
+    line-height: 1.05;
+    color: var(--white);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -1px;
+    transition: color 0.4s;
+  }
+  .calc-card.is-deadline .calc-metric { color: var(--green); }
+  .calc-metric-sub {
+    font-size: 13px;
+    color: var(--muted-2);
+    line-height: 1.6;
+  }
+  .calc-step-list {
+    margin-top: 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted-2);
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .calc-step-list li {
+    position: relative;
+    padding-left: 16px;
+  }
+  .calc-step-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--red);
+  }
+  .calc-card.is-deadline .calc-step-list li::before { color: var(--green); }
+  @media (max-width: 768px) {
+    .calc-right { grid-template-columns: 1fr; }
+    .calc-container { padding: 28px 20px; }
+    .calculator-section { padding-left: 24px; padding-right: 24px; }
+  }
+
+
+</style>
 </head>
 <body>
 
@@ -2006,6 +2229,10 @@
       </a>
       <a href="#features" class="ghost-btn">
         See how it works
+        <span class="arrow">↗</span>
+      </a>
+      <a href="sandbox.html" class="ghost-btn" style="border-color:rgba(34,197,94,0.3);color:var(--green);">
+        Try it now
         <span class="arrow">↗</span>
       </a>
     </div>
@@ -2127,8 +2354,8 @@
     <div class="feature-card reveal delay-4">
       <div class="feature-num">F / 05</div>
       <div class="feature-icon">👻</div>
-      <div class="feature-title">Ghost Town Empty State</div>
-      <div class="feature-desc">When your dashboard is clear, you get Ghost Town. A gentle reminder that a clean slate is yours to fill — or enjoy.</div>
+      <div class="feature-title">Satisfying When You're Done</div>
+      <div class="feature-desc">Clear your last assignment and the app feels it. A quiet moment that makes finishing feel like something — not just an empty list.</div>
     </div>
     <div class="feature-card reveal delay-5">
       <div class="feature-num">F / 06</div>
@@ -2281,8 +2508,8 @@
 <section class="review-section">
   <div class="section-head reveal">
     <div>
-      <div class="section-label">Reviews · 04</div>
-      <h2 class="section-title" style="margin-top:24px;">From the <em>App Store.</em></h2>
+      <div class="section-label">Early Feedback · 04</div>
+      <h2 class="section-title" style="margin-top:24px;">First words <em>from students.</em></h2>
     </div>
   </div>
 
@@ -2305,55 +2532,104 @@
   </div>
 </section>
 
-<!-- ZERO BS -->
-<section class="zero-bs">
-  <div class="section-head reveal">
+<!-- FRICTION CALCULATOR -->
+<section class="calculator-section reveal">
+  <div class="section-head">
     <div>
-      <div class="section-label">No Nonsense · 05</div>
-      <h2 class="section-title" style="margin-top:24px;">Six things you won't <em>need to worry about.</em></h2>
+      <div class="section-label">Friction Math · 05</div>
+      <h2 class="section-title" style="margin-top:24px;">Stop paying the <em>bloat tax.</em></h2>
+    </div>
+    <p class="section-aside">Most productivity tools make you a database engineer before you've typed a single task. Drag to compare.</p>
+  </div>
+  <div class="calc-container">
+    <div class="calc-left">
+      <div class="calc-slider-wrapper">
+        <div class="calc-slider-header">
+          <span>Subjects to set up:</span>
+          <span><strong id="sliderVal">3</strong> Subjects</span>
+        </div>
+        <input type="range" min="1" max="6" value="3" class="calc-slider" id="taskSlider">
+      </div>
+    </div>
+
+    <div class="calc-right">
+      <!-- Notion Column -->
+      <div class="calc-card">
+        <div>
+          <span class="calc-card-meta">Database Architecture (Notion / GSheets)</span>
+          <div class="calc-metric" id="bloatSetup">25m 00s</div>
+        </div>
+        <div class="calc-metric-sub">
+          Setup time playing table layout designer before typing any tasks.
+          <ul class="calc-step-list">
+            <li>Create tables &amp; relations</li>
+            <li>Configure formulas for dates</li>
+            <li>Sort, filter, group by tags</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Deadline Column -->
+      <div class="calc-card is-deadline">
+        <div>
+          <span class="calc-card-meta">Native Ritual (Deadline App)</span>
+          <div class="calc-metric" id="deadlineSetup">6m 00s</div>
+        </div>
+        <div class="calc-metric-sub">
+          Organic flow to name, colour, and assign dates right on your screen.
+          <ul class="calc-step-list">
+            <li>Name subject &amp; pick custom colour</li>
+            <li>Add assignments with native "+"</li>
+            <li>Tactile scroll datewheel &amp; AM/PM</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="zero-bs-grid">
-    <div class="zero-card reveal">
-      <div class="zero-check">✓</div>
-      <div>
-        <div class="zero-text">Completely free</div>
-        <div class="zero-sub">No hidden costs. No premium walls on core features.</div>
-      </div>
+</section>
+
+<!-- SANDBOX TEASER -->
+<section class="sandbox-teaser reveal">
+  <div class="sandbox-teaser-inner">
+    <div class="sandbox-teaser-left">
+      <div class="section-label" style="margin-bottom:20px;">Try It · 07</div>
+      <h2 class="section-title" style="margin-bottom:20px;">Build your first <em>subject.</em></h2>
+      <p style="font-size:14px;color:var(--muted-2);line-height:1.7;max-width:400px;margin-bottom:32px;">The exact ritual from the real app. Type a name, pick a colour, choose an icon, scroll the date wheel. Your live countdown card appears in real time — no download required.</p>
+      <a href="sandbox.html" class="appstore-badge" style="display:inline-flex;background:var(--card);color:var(--white);border:1px solid var(--border-2);">
+        <div style="width:28px;height:28px;border-radius:8px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);display:flex;align-items:center;justify-content:center;color:var(--green);font-size:16px;flex-shrink:0;">⏱</div>
+        <div class="appstore-badge-text">
+          <span class="small" style="color:var(--muted);">Interactive demo</span>
+          <span class="big" style="color:var(--white);font-size:15px;">Try the sandbox →</span>
+        </div>
+      </a>
     </div>
-    <div class="zero-card reveal delay-1">
-      <div class="zero-check">✓</div>
-      <div>
-        <div class="zero-text">No login required</div>
-        <div class="zero-sub">Open the app and go. No email, no account, no setup.</div>
-      </div>
-    </div>
-    <div class="zero-card reveal delay-2">
-      <div class="zero-check">✓</div>
-      <div>
-        <div class="zero-text">No ads</div>
-        <div class="zero-sub">Clean interface, no interruptions, ever.</div>
-      </div>
-    </div>
-    <div class="zero-card reveal delay-3">
-      <div class="zero-check">✓</div>
-      <div>
-        <div class="zero-text">No data collection</div>
-        <div class="zero-sub">Your assignments stay on your device. We collect nothing.</div>
-      </div>
-    </div>
-    <div class="zero-card reveal delay-4">
-      <div class="zero-check">✓</div>
-      <div>
-        <div class="zero-text">Works offline</div>
-        <div class="zero-sub">No internet needed. Always available, always fast.</div>
-      </div>
-    </div>
-    <div class="zero-card reveal delay-5">
-      <div class="zero-check">✓</div>
-      <div>
-        <div class="zero-text">Built by a student</div>
-        <div class="zero-sub">Made because the problem was real. Not a corporate product.</div>
+    <div class="sandbox-teaser-right">
+      <div class="sandbox-preview-card">
+        <div class="spc-step">01 — Name your subject</div>
+        <div class="spc-input">Advanced Algorithms<span class="spc-cursor"></span></div>
+        <div class="spc-step" style="margin-top:20px;">02 — Pick a colour</div>
+        <div class="spc-colors">
+          <div class="spc-swatch" style="background:#5E5CE6;border-color:#fff;"></div>
+          <div class="spc-swatch" style="background:#FF3B30;"></div>
+          <div class="spc-swatch" style="background:#FF9500;"></div>
+          <div class="spc-swatch" style="background:#34C759;"></div>
+          <div class="spc-swatch" style="background:#30B0C7;"></div>
+          <div class="spc-swatch" style="background:#007AFF;"></div>
+          <div class="spc-swatch" style="background:#FF2D55;"></div>
+          <div class="spc-swatch" style="background:#8E8E93;"></div>
+        </div>
+        <div class="spc-step" style="margin-top:20px;">Preview</div>
+        <div class="spc-card">
+          <div class="spc-card-icon" style="background:rgba(94,92,230,0.15);">
+            <span style="font-size:18px;">📚</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:15px;font-weight:600;color:#fff;">Advanced Algorithms</div>
+            <div style="font-size:12px;color:var(--muted-2);">0 tasks remaining</div>
+          </div>
+          <div style="font-family:var(--mono);font-size:12px;color:#22c55e;flex-shrink:0;">6D LEFT</div>
+          <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:#5E5CE6;border-radius:0 0 10px 10px;"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -2428,7 +2704,7 @@
     <div class="rings"><span></span><span></span><span></span></div>
     <div class="cta-inner">
       <h2>Your deadlines,<br><em>handled.<svg viewBox="0 0 200 30" preserveAspectRatio="none"><path d="M5 22 Q 50 6, 100 18 T 195 14"/></svg></em></h2>
-      <p>Stop using Notion, spreadsheets, and calendar apps for something they weren't built for.<br>Deadline is built for exactly one thing — and it does it perfectly.</p>
+      <p>Your next deadline is already counting down.<br>You should know exactly how much time you have.</p>
       <a href="https://apps.apple.com/us/app/deadline/id6767482309" target="_blank" class="appstore-badge" style="display: inline-flex;">
         <div class="appstore-badge-left">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="#000"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
@@ -2456,6 +2732,8 @@
     <div>© 2026 Deadline. All rights reserved.</div>
     <div>
       <a href="https://github.com/Zukof1/deadline-app" target="_blank">GitHub</a>
+      &nbsp;·&nbsp;
+      <a href="sandbox.html">Try Sandbox</a>
       &nbsp;·&nbsp;
       <a href="support.html">Support</a>
       &nbsp;·&nbsp;
@@ -2858,6 +3136,37 @@
 
     // announce availability after listener is wired
     window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+  })();
+
+  /* ─── Friction Calculator ─── */
+  (function () {
+    const slider = document.getElementById('taskSlider');
+    const sliderVal = document.getElementById('sliderVal');
+    const bloatEl = document.getElementById('bloatSetup');
+    const deadlineEl = document.getElementById('deadlineSetup');
+    if (!slider) return;
+
+    // Per-subject setup times in seconds
+    const BLOAT_BASE = 300;   // 5 min base (open app, create page)
+    const BLOAT_PER  = 480;   // 8 min per subject (table, formulas, tags)
+    const DL_BASE    = 60;    // 1 min base
+    const DL_PER     = 90;    // 1.5 min per subject (name, colour, done)
+
+    function fmt(secs) {
+      const m = Math.floor(secs / 60);
+      const s = secs % 60;
+      return m + 'm ' + String(s).padStart(2, '0') + 's';
+    }
+
+    function update() {
+      const n = parseInt(slider.value, 10);
+      sliderVal.textContent = n;
+      bloatEl.textContent   = fmt(BLOAT_BASE + n * BLOAT_PER);
+      deadlineEl.textContent = fmt(DL_BASE + n * DL_PER);
+    }
+
+    slider.addEventListener('input', update);
+    update();
   })();
 </script>
 
