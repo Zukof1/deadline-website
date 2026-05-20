@@ -5,20 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Support — Deadline.</title>
 <meta name="description" content="Get help with Deadline, the student assignment tracker. FAQ and contact information.">
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --black: #080808;
     --dark: #111111;
     --card: #141414;
+    --card-2: #181818;
     --border: #1e1e1e;
+    --border-2: #262626;
     --white: #ffffff;
     --muted: #555555;
+    --muted-2: #8a8a8a;
     --green: #22c55e;
     --yellow: #eab308;
     --orange: #f97316;
     --red: #ef4444;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -42,7 +47,16 @@
     opacity: 0.4;
   }
 
-  /* ── NAV ── */
+  .scroll-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--green), var(--yellow) 40%, var(--orange) 75%, var(--red));
+    z-index: 200;
+    transition: width 0.08s linear;
+  }
+
   nav {
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -62,9 +76,32 @@
     font-weight: 700;
     color: var(--white);
     text-decoration: none;
+    display: inline-flex;
+    align-items: baseline;
   }
+  .nav-logo span { color: var(--green); display: inline-block; transition: transform .3s ease; }
+  .nav-logo:hover span { transform: translateY(-3px) scale(1.5); }
 
-  .nav-logo span { color: var(--green); }
+  .nav-time {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .nav-time .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
 
   .nav-cta {
     display: inline-flex;
@@ -78,82 +115,95 @@
     font-weight: 500;
     text-decoration: none;
     transition: all 0.2s;
-    letter-spacing: 0.2px;
   }
-
   .nav-cta:hover { background: #e0e0e0; transform: translateY(-1px); }
-
-  /* ── PAGE WRAPPER ── */
-  .page {
-    position: relative;
-    z-index: 1;
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 160px 48px 120px;
-  }
-
-  /* ── HEADER ── */
-  .page-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 16px;
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    font-size: 12px;
-    color: var(--muted);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin-bottom: 32px;
-    animation: fadeUp 0.8s ease both;
-  }
-
-  .page-eyebrow-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--green);
-    animation: pulse-dot 2s ease-in-out infinite;
-  }
 
   @keyframes pulse-dot {
     0%,100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.4; transform: scale(1.3); }
   }
 
-  .page-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(40px, 7vw, 72px);
-    line-height: 0.95;
-    letter-spacing: -2px;
-    margin-bottom: 20px;
-    animation: fadeUp 0.8s 0.1s ease both;
+  /* PAGE */
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 160px 48px 100px;
   }
 
-  .page-title em {
-    font-style: italic;
-    color: rgba(255,255,255,0.35);
+  .page-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 18px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 11px;
+    color: var(--muted-2);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    background: rgba(20,20,20,0.4);
+    font-family: var(--mono);
+    animation: fadeUp 0.8s ease both;
+  }
+  .page-eyebrow-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse-dot 2s ease-in-out infinite;
+    box-shadow: 0 0 12px var(--green);
+  }
+
+  .page-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(48px, 8vw, 88px);
+    line-height: 0.95;
+    letter-spacing: -2.5px;
+    margin-bottom: 24px;
+    font-weight: 400;
+  }
+  .page-title .line { display: block; overflow: hidden; }
+  .page-title .line > span {
+    display: inline-block;
+    transform: translateY(110%);
+    animation: rise 0.9s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .page-title .line:nth-child(1) > span { animation-delay: 0.10s; }
+  .page-title .line:nth-child(2) > span { animation-delay: 0.22s; }
+  .page-title em { font-style: italic; color: rgba(255,255,255,0.35); }
+
+  @keyframes rise {
+    from { transform: translateY(110%); }
+    to { transform: translateY(0); }
   }
 
   .page-sub {
     font-size: 16px;
-    color: var(--muted);
+    color: var(--muted-2);
     line-height: 1.7;
     margin-bottom: 80px;
-    animation: fadeUp 0.8s 0.2s ease both;
+    animation: fadeUp 0.8s 0.4s ease both;
+    max-width: 540px;
   }
 
-  /* ── SECTION LABEL ── */
   .section-label {
     font-size: 11px;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 24px;
+    margin-bottom: 28px;
     display: flex;
     align-items: center;
     gap: 16px;
+    font-family: var(--mono);
   }
-
+  .section-label::before {
+    content: '';
+    width: 24px; height: 1px;
+    background: var(--muted);
+  }
   .section-label::after {
     content: '';
     flex: 1;
@@ -161,12 +211,12 @@
     background: var(--border);
   }
 
-  /* ── FAQ ── */
+  /* FAQ */
   .faq-list {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    margin-bottom: 80px;
+    gap: 6px;
+    margin-bottom: 100px;
   }
 
   .faq-item {
@@ -174,10 +224,16 @@
     border-radius: 14px;
     overflow: hidden;
     background: var(--card);
-    transition: background 0.2s;
+    transition: background 0.25s, border-color .25s;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity .6s, transform .6s, background .25s, border-color .25s;
   }
-
-  .faq-item:hover { background: #181818; }
+  .faq-item.in-view {
+    opacity: 1; transform: translateY(0);
+  }
+  .faq-item:hover { background: var(--card-2); border-color: var(--border-2); }
+  .faq-item.open { border-color: rgba(34,197,94,0.25); background: var(--card-2); }
 
   .faq-question {
     width: 100%;
@@ -196,16 +252,23 @@
     gap: 16px;
     letter-spacing: -0.2px;
   }
+  .faq-q-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    margin-right: 14px;
+  }
 
   .faq-chevron {
-    width: 18px; height: 18px;
+    width: 24px; height: 24px;
     border-radius: 50%;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-2);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: transform 0.25s ease, border-color 0.2s;
+    transition: transform 0.35s cubic-bezier(.2,.7,.2,1), border-color 0.25s, background 0.25s;
     color: var(--muted);
     font-size: 10px;
   }
@@ -214,48 +277,45 @@
     transform: rotate(180deg);
     border-color: var(--green);
     color: var(--green);
+    background: rgba(34,197,94,0.08);
   }
 
   .faq-answer {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.35s ease, padding 0.25s ease;
+    transition: max-height 0.4s cubic-bezier(.2,.7,.2,1), padding 0.3s;
     padding: 0 28px;
   }
 
   .faq-item.open .faq-answer {
-    max-height: 600px;
-    padding: 0 28px 24px;
+    max-height: 700px;
+    padding: 0 28px 28px;
   }
 
   .faq-answer p {
     font-size: 14px;
-    color: var(--muted);
+    color: var(--muted-2);
     line-height: 1.8;
   }
-
-  .faq-answer p + p { margin-top: 12px; }
-
-  .faq-answer strong {
-    color: var(--white);
-    font-weight: 500;
-  }
+  .faq-answer p + p { margin-top: 14px; }
+  .faq-answer strong { color: var(--white); font-weight: 500; }
 
   .faq-answer .highlight {
     display: inline-block;
-    padding: 2px 8px;
+    padding: 2px 9px;
     border-radius: 6px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     margin: 0 2px;
+    font-family: var(--mono);
+    letter-spacing: 0.5px;
   }
-
   .highlight-green { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
   .highlight-yellow { background: rgba(234,179,8,0.1); color: var(--yellow); border: 1px solid rgba(234,179,8,0.2); }
   .highlight-orange { background: rgba(249,115,22,0.1); color: var(--orange); border: 1px solid rgba(249,115,22,0.2); }
   .highlight-red { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
 
-  /* ── CONTACT ── */
+  /* CONTACT */
   .contact-card {
     border: 1px solid var(--border);
     border-radius: 20px;
@@ -263,7 +323,11 @@
     background: var(--card);
     position: relative;
     overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .8s, transform .8s;
   }
+  .contact-card.in-view { opacity: 1; transform: translateY(0); }
 
   .contact-card::before {
     content: '';
@@ -273,20 +337,36 @@
     width: 160px; height: 1px;
     background: linear-gradient(to right, transparent, var(--green), transparent);
   }
+  .contact-card::after {
+    content: '';
+    position: absolute;
+    top: -40%; right: -10%;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(34,197,94,0.06), transparent 65%);
+    pointer-events: none;
+    animation: glow-drift 10s ease-in-out infinite;
+  }
+  @keyframes glow-drift {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-30px, 20px); }
+  }
 
   .contact-card h2 {
     font-family: 'DM Serif Display', serif;
-    font-size: 28px;
-    letter-spacing: -0.5px;
+    font-size: 32px;
+    letter-spacing: -0.6px;
     margin-bottom: 12px;
+    font-weight: 400;
+    position: relative; z-index: 1;
   }
 
   .contact-card p {
     font-size: 14px;
-    color: var(--muted);
+    color: var(--muted-2);
     line-height: 1.7;
     margin-bottom: 32px;
-    max-width: 480px;
+    max-width: 520px;
+    position: relative; z-index: 1;
   }
 
   .contact-email-block {
@@ -297,10 +377,11 @@
     border: 1px solid var(--border);
     border-radius: 12px;
     background: var(--dark);
+    position: relative; z-index: 1;
   }
 
   .contact-email-icon {
-    width: 36px; height: 36px;
+    width: 38px; height: 38px;
     border-radius: 10px;
     background: rgba(34,197,94,0.1);
     border: 1px solid rgba(34,197,94,0.2);
@@ -311,16 +392,15 @@
     font-size: 16px;
   }
 
-  .contact-email-text {
-    flex: 1;
-  }
+  .contact-email-text { flex: 1; }
 
   .contact-email-label {
-    font-size: 11px;
-    letter-spacing: 1.5px;
+    font-size: 10px;
+    letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--muted);
     margin-bottom: 4px;
+    font-family: var(--mono);
   }
 
   .contact-email-address {
@@ -331,98 +411,131 @@
   }
 
   .contact-copy-btn {
-    padding: 8px 16px;
-    border: 1px solid var(--border);
+    padding: 9px 18px;
+    border: 1px solid var(--border-2);
     border-radius: 8px;
     background: none;
-    color: var(--muted);
-    font-family: 'Satoshi', sans-serif;
-    font-size: 12px;
+    color: var(--muted-2);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
   }
-
   .contact-copy-btn:hover {
     border-color: var(--green);
     color: var(--green);
   }
-
   .contact-copy-btn.copied {
     border-color: var(--green);
     color: var(--green);
+    background: rgba(34,197,94,0.08);
   }
 
   .contact-note {
     font-size: 13px;
     color: var(--muted);
-    margin-top: 20px;
+    margin-top: 24px;
     line-height: 1.6;
+    position: relative; z-index: 1;
   }
 
-  /* ── FOOTER ── */
+  /* FOOTER */
   footer {
     position: relative;
     z-index: 1;
     border-top: 1px solid var(--border);
-    padding: 40px 48px;
+  }
+  .footer-marquee {
+    overflow: hidden;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .marquee {
+    display: flex;
+    gap: 48px;
+    width: max-content;
+    animation: marquee-scroll 60s linear infinite;
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: clamp(32px, 5vw, 56px);
+    letter-spacing: -1px;
+    color: rgba(255,255,255,0.06);
+    line-height: 1;
+  }
+  @keyframes marquee-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .footer-bottom {
+    padding: 28px 48px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: var(--muted);
     font-size: 13px;
+    flex-wrap: wrap;
+    gap: 16px;
   }
-
-  .footer-logo {
-    font-family: 'DM Serif Display', serif;
-    font-size: 18px;
-    color: var(--white);
-  }
+  .footer-logo { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--white); font-style: italic; }
+  .footer-bottom a { color: inherit; text-decoration: none; transition: color .2s; }
+  .footer-bottom a:hover { color: var(--white); }
 
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
+    from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
   @media (max-width: 768px) {
     nav { padding: 16px 24px; }
-    .page { padding: 120px 24px 80px; }
-    footer { flex-direction: column; gap: 16px; text-align: center; }
+    .nav-time { display: none; }
+    .page { padding: 130px 24px 80px; }
+    .footer-bottom { flex-direction: column; gap: 12px; text-align: center; padding: 24px; }
     .contact-card { padding: 32px 24px; }
     .contact-email-block { flex-wrap: wrap; }
     .contact-copy-btn { width: 100%; text-align: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
 <nav>
-  <a href="/" class="nav-logo">deadline<span>.</span></a>
+  <a href="index.html" class="nav-logo">deadline<span>.</span></a>
+  <div class="nav-time" id="navTime"><span class="dot"></span><span id="navTimeText">SYNC · 00:00:00</span></div>
   <a href="https://apps.apple.com/us/app/deadline/id6767482309" target="_blank" class="nav-cta">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
     Download Free
   </a>
 </nav>
 
-<!-- PAGE -->
 <div class="page">
 
   <div class="page-eyebrow">
     <div class="page-eyebrow-dot"></div>
-    Support
+    Support · FAQ
   </div>
 
-  <h1 class="page-title">How can we<br><em>help you?</em></h1>
-  <p class="page-sub">Answers to common questions, and a direct line to get in touch.</p>
+  <h1 class="page-title">
+    <span class="line"><span>How can we</span></span>
+    <span class="line"><span><em>help you?</em></span></span>
+  </h1>
+  <p class="page-sub">Answers to common questions, and a direct line to get in touch. A real person reads every email — usually within a day.</p>
 
-  <!-- FAQ -->
-  <div class="section-label">FAQ</div>
+  <div class="section-label">Frequently asked · 01</div>
+
   <div class="faq-list">
 
     <div class="faq-item">
       <button class="faq-question" onclick="toggle(this)">
-        How is this different from my calendar or reminders app?
+        <span><span class="faq-q-num">Q / 01</span>How is this different from my calendar or reminders app?</span>
         <span class="faq-chevron">▾</span>
       </button>
       <div class="faq-answer">
@@ -432,15 +545,15 @@
           <span class="highlight highlight-yellow">yellow</span> when it's closing in,
           <span class="highlight highlight-orange">orange</span> when it's urgent, and
           <span class="highlight highlight-red">red</span> when it's critical.
-          No setup, no calendar views to navigate, no noise. Just your assignments and how long you have left.
+          No setup, no calendar views to navigate, no noise.
         </p>
-        <p style="color: var(--white); font-size: 15px; font-weight: 400; border-left: 2px solid var(--green); padding-left: 16px; margin-top: 16px;">A calendar shows you <strong>when</strong> something is due. Deadline shows you <strong>how long you actually have</strong> and makes sure you feel it.</p>
+        <p style="color: var(--white); font-size: 14px; font-weight: 400; border-left: 2px solid var(--green); padding-left: 16px; margin-top: 18px;">A calendar shows you <strong>when</strong> something is due. Deadline shows you <strong>how long you actually have</strong> and makes sure you feel it.</p>
       </div>
     </div>
 
     <div class="faq-item">
       <button class="faq-question" onclick="toggle(this)">
-        Is Deadline really free? No catch?
+        <span><span class="faq-q-num">Q / 02</span>Is Deadline really free? No catch?</span>
         <span class="faq-chevron">▾</span>
       </button>
       <div class="faq-answer">
@@ -451,7 +564,7 @@
 
     <div class="faq-item">
       <button class="faq-question" onclick="toggle(this)">
-        Does Deadline collect my data?
+        <span><span class="faq-q-num">Q / 03</span>Does Deadline collect my data?</span>
         <span class="faq-chevron">▾</span>
       </button>
       <div class="faq-answer">
@@ -462,7 +575,7 @@
 
     <div class="faq-item">
       <button class="faq-question" onclick="toggle(this)">
-        Does it work without internet?
+        <span><span class="faq-q-num">Q / 04</span>Does it work without internet?</span>
         <span class="faq-chevron">▾</span>
       </button>
       <div class="faq-answer">
@@ -472,7 +585,7 @@
 
     <div class="faq-item">
       <button class="faq-question" onclick="toggle(this)">
-        How does the urgency colour system work?
+        <span><span class="faq-q-num">Q / 05</span>How does the urgency colour system work?</span>
         <span class="faq-chevron">▾</span>
       </button>
       <div class="faq-answer">
@@ -489,7 +602,7 @@
 
     <div class="faq-item">
       <button class="faq-question" onclick="toggle(this)">
-        I accidentally completed an assignment. Can I undo it?
+        <span><span class="faq-q-num">Q / 06</span>I accidentally completed an assignment. Can I undo it?</span>
         <span class="faq-chevron">▾</span>
       </button>
       <div class="faq-answer">
@@ -499,7 +612,7 @@
 
     <div class="faq-item">
       <button class="faq-question" onclick="toggle(this)">
-        Will there be an Android version?
+        <span><span class="faq-q-num">Q / 07</span>Will there be an Android version?</span>
         <span class="faq-chevron">▾</span>
       </button>
       <div class="faq-answer">
@@ -509,7 +622,7 @@
 
     <div class="faq-item">
       <button class="faq-question" onclick="toggle(this)">
-        How do I delete all my data?
+        <span><span class="faq-q-num">Q / 08</span>How do I delete all my data?</span>
         <span class="faq-chevron">▾</span>
       </button>
       <div class="faq-answer">
@@ -520,17 +633,16 @@
 
   </div>
 
-  <!-- CONTACT -->
-  <div class="section-label">Contact</div>
+  <div class="section-label">Contact · 02</div>
   <div class="contact-card">
     <h2>Get in touch</h2>
-    <p>Found a bug? Have a feature request? Just want to say something? Send us an email directly — no forms, no tickets, no bots. A real person reads every message.</p>
+    <p>Found a bug? Have a feature request? Just want to say something? Send an email directly — no forms, no tickets, no bots. A real person reads every message.</p>
 
     <div class="contact-email-block">
-      <div class="contact-email-icon">✉️</div>
+      <div class="contact-email-icon">✉</div>
       <div class="contact-email-text">
         <div class="contact-email-label">Email us at</div>
-        <div class="contact-email-address">deadlineapp.contact@gmail.com</div>
+        <div class="contact-email-address"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8aeeefebeee6e3e4efebfafaa4e9e5e4feebe9fecaede7ebe3e6a4e9e5e7">[email&#160;protected]</a></div>
       </div>
       <button class="contact-copy-btn" onclick="copyEmail(this)">Copy</button>
     </div>
@@ -540,21 +652,44 @@
 
 </div>
 
-<!-- FOOTER -->
 <footer>
-  <div class="footer-logo">deadline.</div>
-  <div>Made with purpose. Free to use.</div>
-  <div>© 2026 Deadline. All rights reserved.</div>
-  <div>
-    <a href="/" style="color: inherit; text-decoration: none;">Home</a>
-    &nbsp;·&nbsp;
-    <a href="mailto:deadlineapp.contact@gmail.com" style="color: inherit; text-decoration: none;">Support</a>
-    &nbsp;·&nbsp;
-    <a href="/privacy.html" style="color: inherit; text-decoration: none;">Privacy Policy</a>
+  <div class="footer-marquee" aria-hidden="true">
+    <div class="marquee">
+      <span>deadline.</span><span>deadline.</span><span>deadline.</span><span>deadline.</span>
+      <span>deadline.</span><span>deadline.</span><span>deadline.</span><span>deadline.</span>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-logo">deadline.</div>
+    <div>© 2026 Deadline. All rights reserved.</div>
+    <div>
+      <a href="index.html">Home</a>
+      &nbsp;·&nbsp;
+      <a href="privacy.html">Privacy</a>
+      &nbsp;·&nbsp;
+      <a href="/cdn-cgi/l/email-protection#85e1e0e4e1e9ecebe0e4f5f5abe6eaebf1e4e6f1c5e2e8e4ece9abe6eae8">Contact</a>
+    </div>
   </div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  const progressEl = document.getElementById('scrollProgress');
+  function updateProgress() {
+    const h = document.documentElement;
+    const total = h.scrollHeight - h.clientHeight;
+    progressEl.style.width = (total > 0 ? (h.scrollTop / total) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function updateNavTime() {
+    const d = new Date();
+    document.getElementById('navTimeText').textContent =
+      'SYNC · ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  }
+  setInterval(updateNavTime, 1000); updateNavTime();
+
   function toggle(btn) {
     const item = btn.closest('.faq-item');
     const isOpen = item.classList.contains('open');
@@ -572,6 +707,21 @@
       }, 2000);
     });
   }
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.faq-item, .contact-card').forEach(el => io.observe(el));
+
+  // stagger faq reveal
+  document.querySelectorAll('.faq-item').forEach((el, i) => {
+    el.style.transitionDelay = (0.04 * i) + 's';
+  });
 </script>
 
 </body>
