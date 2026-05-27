@@ -1461,6 +1461,8 @@
   .review-section.in-view .review-stars span:nth-child(3) { transition-delay: .28s; }
   .review-section.in-view .review-stars span:nth-child(4) { transition-delay: .38s; }
   .review-section.in-view .review-stars span:nth-child(5) { transition-delay: .48s; }
+  /* show stars on non-active slides too — carousel handles order */
+  .review-slide .review-stars span { opacity: 1; transform: scale(1) rotate(0); transition: opacity .35s cubic-bezier(.5,1.5,.3,1), transform .55s cubic-bezier(.5,1.6,.3,1); }
 
   .review-quote {
     font-family: 'DM Serif Display', serif;
@@ -1597,7 +1599,7 @@
 
   .whats-next-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 12px;
   }
 
@@ -1633,10 +1635,66 @@
     color: var(--yellow);
   }
 
+  .label-shipped {
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.2);
+    color: var(--green);
+  }
+
   .label-android {
     background: rgba(34,197,94,0.08);
     border: 1px solid rgba(34,197,94,0.2);
     color: var(--green);
+  }
+
+  .label-android-progress {
+    background: rgba(249,115,22,0.08);
+    border: 1px solid rgba(249,115,22,0.2);
+    color: var(--orange);
+  }
+
+  .label-soon {
+    background: rgba(138,138,138,0.08);
+    border: 1px solid rgba(138,138,138,0.18);
+    color: var(--muted-2);
+  }
+
+  /* ── REVIEW CAROUSEL ── */
+  .review-carousel {
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+  }
+  .review-carousel.is-dragging {
+    cursor: grabbing;
+  }
+  .review-track {
+    display: flex;
+    transition: transform 0.55s cubic-bezier(.4,0,.2,1);
+  }
+  .review-track.no-transition {
+    transition: none;
+  }
+  .review-slide {
+    min-width: 100%;
+    flex-shrink: 0;
+  }
+  .review-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 28px;
+  }
+  .review-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border-2);
+    cursor: pointer;
+    transition: background 0.25s, transform 0.25s;
+  }
+  .review-dot.active {
+    background: var(--yellow);
+    transform: scale(1.35);
   }
 
   .label-dot {
@@ -2020,6 +2078,7 @@
     .demo-stage { grid-template-columns: 1fr; }
     .demo-left { border-right: none; border-bottom: 1px solid var(--border); }
     .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .whats-next-grid { grid-template-columns: 1fr 1fr; }
   }
   @media (max-width: 768px) {
     nav { padding: 16px 24px; }
@@ -2597,7 +2656,7 @@
       <div class="hero-eyebrow-dot"></div>
       <span>Live on the App Store</span>
       <span class="sep">·</span>
-      <span class="count">v1.0</span>
+      <span class="count">v1.1</span>
     </div>
 
     <h1>
@@ -3091,26 +3150,83 @@
 <section class="review-section">
   <div class="section-head reveal">
     <div>
-      <div class="section-label">Early Feedback · 04</div>
+      <div class="section-label">App Store Reviews · 04</div>
       <h2 class="section-title" style="margin-top:24px;">First words <em>from students.</em></h2>
     </div>
   </div>
 
-  <div class="review-card reveal">
-    <div class="review-stars">
-      <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+  <div class="review-carousel reveal">
+    <div class="review-track" id="reviewTrack">
+
+      <!-- Review 1: SZYX77 -->
+      <div class="review-slide">
+        <div class="review-card">
+          <div class="review-stars">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <div class="review-quote" id="reviewQuote">"No subscription, no IAP, ad-free and <em>does what it says on the tin.</em> Looking forward to updates."</div>
+          <div class="review-meta">
+            <div class="review-avatar">S</div>
+            <div class="review-author">
+              <strong>SZYX77</strong>
+              Verified App Store review · 14 May
+            </div>
+            <div class="review-source">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" opacity="0.4"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              App Store
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Review 2: Khatera.s -->
+      <div class="review-slide">
+        <div class="review-card">
+          <div class="review-stars">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <div class="review-quote">"<em>Very helpful</em> and easy to use — <em>perfect for students.</em>"</div>
+          <div class="review-meta">
+            <div class="review-avatar">K</div>
+            <div class="review-author">
+              <strong>Khatera.s</strong>
+              Verified App Store review · 15 May
+            </div>
+            <div class="review-source">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" opacity="0.4"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              App Store
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Review 3: javiddd1_ -->
+      <div class="review-slide">
+        <div class="review-card">
+          <div class="review-stars">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <div class="review-quote">"Compared to the rest of the apps where you have to pay subscriptions and see tons of ads, this one <em>really stands out</em> for its simplicity. Highly recommended."</div>
+          <div class="review-meta">
+            <div class="review-avatar">J</div>
+            <div class="review-author">
+              <strong>javiddd1_</strong>
+              Verified App Store review · 24 May
+            </div>
+            <div class="review-source">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" opacity="0.4"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              App Store
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
-    <div class="review-quote" id="reviewQuote" style="font-family: &quot;DM Serif Display&quot;">"No subscription, no IAP, ad-free and <em>does what it says on the tin.</em> Looking forward to updates."</div>
-    <div class="review-meta">
-      <div class="review-avatar">S</div>
-      <div class="review-author">
-        <strong>SZYX77</strong>
-        Verified App Store review
-      </div>
-      <div class="review-source">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" opacity="0.4"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-        App Store
-      </div>
+    <!-- dots -->
+    <div class="review-dots" id="reviewDots">
+      <div class="review-dot active" data-idx="0"></div>
+      <div class="review-dot" data-idx="1"></div>
+      <div class="review-dot" data-idx="2"></div>
     </div>
   </div>
 </section>
@@ -3229,55 +3345,137 @@
   </div>
 
   <div class="whats-next-grid">
-    <div class="next-card reveal">
-      <div class="next-card-label label-android">
-        <span class="label-dot"></span>
-        v1.1 shipped
-      </div>
-      <div class="next-card-content">
-        <h3>Push<br><em>Notifications</em></h3>
-        <p>Get reminded before a deadline hits. Deadline will tap you on the shoulder when it matters.</p>
-      </div>
-      <div class="notif-mockup">
-        <div class="notif-header">
-          <div class="notif-app-icon">⏱</div>
-          <div class="notif-app-name">Deadline</div>
-          <div class="notif-time">now</div>
-        </div>
-        <div class="notif-title">MIS202 — Assessment Task 3</div>
-        <div class="notif-body">Due in 3 hours. Time to focus.</div>
-        <div class="notif-urgency-bar"></div>
-      </div>
-    </div>
 
-    <div class="next-card reveal delay-1">
-      <div class="next-card-label label-android">
+    <!-- IN PROGRESS: Android -->
+    <div class="next-card reveal">
+      <div class="next-card-label label-android-progress">
         <span class="label-dot"></span>
-        Coming soon
+        Submitting to Google Play
       </div>
       <div class="next-card-content">
         <h3>Android<br><em>Support</em></h3>
-        <p>Deadline is coming to Google Play. Same app, same philosophy. Built for every student, not just iPhone users.</p>
+        <p>Google Play Console account purchased. Build compiling now. Same app, same philosophy — for every student, not just iPhone users.</p>
       </div>
       <div class="android-mockup">
-        <div class="android-badge">
+        <div class="android-badge" style="opacity:0.85;filter:none;">
           <svg width="22" height="24" viewBox="0 0 48 48" fill="white"><path d="M 12 4 C 10.894531 4 10 4.894531 10 6 L 10 42 C 10 43.105469 10.894531 44 12 44 L 36 44 C 37.105469 44 38 43.105469 38 42 L 38 6 C 38 4.894531 37.105469 4 36 4 Z M 24 40 C 22.34375 40 21 38.65625 21 37 C 21 35.34375 22.34375 34 24 34 C 25.65625 34 27 35.34375 27 37 C 27 38.65625 25.65625 40 24 40 Z M 14 10 L 34 10 L 34 32 L 14 32 Z"/></svg>
           <div class="android-badge-text">
-            <span class="small">Get it on</span>
+            <span class="small">Coming to</span>
             <span class="big">Google Play</span>
           </div>
         </div>
         <div class="android-progress">
           <div class="android-progress-label">
-            <span>Build progress</span>
-            <span>Coming soon</span>
+            <span>Submission progress</span>
+            <span style="color:var(--orange);">Console setup</span>
           </div>
           <div class="android-progress-bar">
-            <div class="android-progress-fill"></div>
+            <div class="android-progress-fill" style="width:20%;background:var(--orange);animation:none;"></div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- COMING SOON: Recurring Assignments -->
+    <div class="next-card reveal delay-1">
+      <div class="next-card-label label-soon">
+        <span class="label-dot"></span>
+        Coming soon
+      </div>
+      <div class="next-card-content">
+        <h3>Recurring<br><em>Assignments</em></h3>
+        <p>Weekly quizzes. Fortnightly labs. Set it once and Deadline generates the entries automatically every cycle.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:auto;">
+        <div style="position:relative;display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+          <span style="font-size:16px;">🔁</span>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:500;color:var(--white);">MIS202 — Weekly Quiz</div>
+            <div style="font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:0.5px;">Every Monday · 9:00 AM</div>
+          </div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--green);">5D LEFT</div>
+          <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--green);border-radius:0 0 8px 8px;"></div>
+        </div>
+        <div style="position:relative;display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;overflow:hidden;opacity:0.5;">
+          <span style="font-size:16px;">🔁</span>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:500;color:var(--white);">LAW401 — Lab Report</div>
+            <div style="font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:0.5px;">Every 2 weeks · Friday</div>
+          </div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--yellow);">2D 14H</div>
+          <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--yellow);border-radius:0 0 8px 8px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMING SOON: ICS Calendar Import -->
+    <div class="next-card reveal delay-2">
+      <div class="next-card-label label-soon">
+        <span class="label-dot"></span>
+        Coming soon
+      </div>
+      <div class="next-card-content">
+        <h3>ICS Calendar<br><em>Import</em></h3>
+        <p>Export your timetable from your university portal and import it directly. Your subjects and due dates, populated in seconds.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:auto;">
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);display:grid;place-items:center;font-size:16px;flex-shrink:0;">📅</div>
+          <div style="flex:1;">
+            <div style="font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">Import from</div>
+            <div style="font-size:13px;font-weight:500;color:var(--white);">DeakinSync · StudentConnect · LMS</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:0 2px;">
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+          <span>drops as a .ics file</span>
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+        </div>
+        <div style="padding:10px 14px;background:rgba(34,197,94,0.04);border:1px solid rgba(34,197,94,0.15);border-radius:10px;font-size:12px;color:var(--muted-2);line-height:1.6;">
+          <span style="color:var(--green);font-weight:500;">12 assignments</span> detected across <span style="color:var(--white);">4 subjects</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMING SOON: iOS Widgets -->
+    <div class="next-card reveal delay-3">
+      <div class="next-card-label label-soon">
+        <span class="label-dot"></span>
+        Coming soon
+      </div>
+      <div class="next-card-content">
+        <h3>iOS<br><em>Widgets</em></h3>
+        <p>Your next deadline, right on your home screen. No unlock required. Small, medium, and lock screen sizes.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:auto;">
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <div style="width:90px;height:90px;border-radius:20px;background:var(--card-2);border:1px solid var(--border-2);padding:12px;display:flex;flex-direction:column;justify-content:space-between;flex-shrink:0;position:relative;overflow:hidden;">
+            <div style="font-size:9px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;">Next due</div>
+            <div>
+              <div style="font-size:11px;font-weight:600;color:var(--white);line-height:1.2;">MIS202<br>Essay</div>
+              <div style="font-family:var(--mono);font-size:10px;color:var(--red);margin-top:4px;">14H 32M</div>
+            </div>
+            <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--red);animation:pulse-line 1.2s ease-in-out infinite;"></div>
+          </div>
+          <div style="flex:1;height:90px;border-radius:20px;background:var(--card-2);border:1px solid var(--border-2);padding:12px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;">
+            <div style="font-size:9px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;">Upcoming</div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:11px;color:var(--white);">MIS202 Essay</span>
+                <span style="font-family:var(--mono);font-size:10px;color:var(--red);">14H</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;opacity:0.55;">
+                <span style="font-size:11px;color:var(--white);">LAW401 Case</span>
+                <span style="font-family:var(--mono);font-size:10px;color:var(--yellow);">2D</span>
+              </div>
+            </div>
+            <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--red);animation:pulse-line 1.2s ease-in-out infinite;"></div>
+          </div>
+        </div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;text-align:center;">Small · Medium · Lock Screen</div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -3584,71 +3782,120 @@
     tick();
     setInterval(tick, 1000);
   })();
+  /* ─── Review Carousel ─── */
   (function () {
-    const q = document.getElementById('reviewQuote');
-    if (!q) return;
-    // Clear any stale inline font-family from prior edit-mode overrides
-    q.style.fontFamily = '';
-    const charSpans = [];
-    const wrapChars = (node) => {
-      [...node.childNodes].forEach(child => {
-        if (child.nodeType === 3) {
-          const frag = document.createDocumentFragment();
-          [...child.textContent].forEach(ch => {
-            if (ch === ' ') {
-              // Use real text-node spaces so the line can wrap
-              frag.appendChild(document.createTextNode(' '));
-            } else {
-              const s = document.createElement('span');
-              s.className = 'tc';
-              s.textContent = ch;
-              frag.appendChild(s);
-              charSpans.push({ el: s, ch });
-            }
-          });
-          node.replaceChild(frag, child);
-        } else if (child.nodeType === 1) {
-          wrapChars(child);
-        }
-      });
-    };
-    wrapChars(q);
+    const carousel = document.querySelector('.review-carousel');
+    const track    = document.getElementById('reviewTrack');
+    const dots     = document.querySelectorAll('.review-dot');
+    if (!track) return;
+    const slides = track.querySelectorAll('.review-slide');
+    const total  = slides.length;
+    let current  = 0;
+    let timer;
 
-    const cursor = document.createElement('span');
-    cursor.className = 'type-cursor';
-    q.appendChild(cursor);
-
-    let started = false;
-    function startTyping() {
-      if (started) return;
-      started = true;
-      let i = 0;
-      function tick() {
-        if (i >= charSpans.length) {
-          setTimeout(() => cursor.classList.add('faded'), 1800);
-          return;
-        }
-        const { el, ch } = charSpans[i];
-        el.classList.add('shown');
-        i++;
-        let delay = 24;
-        if ('.,!?—'.includes(ch)) delay = 180;
-        setTimeout(tick, delay);
-      }
-      tick();
+    function goTo(idx) {
+      current = (idx + total) % total;
+      track.style.transform = 'translateX(-' + (current * 100) + '%)';
+      dots.forEach((d, i) => d.classList.toggle('active', i === current));
     }
 
-    // hook into the review-section in-view trigger
+    function next() { goTo(current + 1); }
+
+    function startAuto() {
+      clearInterval(timer);
+      timer = setInterval(next, 4800);
+    }
+
+    function stopAuto() {
+      clearInterval(timer);
+    }
+
+    // dot clicks
+    dots.forEach(d => {
+      d.addEventListener('click', () => {
+        goTo(parseInt(d.dataset.idx));
+        startAuto();
+      });
+    });
+
+    // pause on hover, resume on leave
+    carousel.addEventListener('mouseenter', stopAuto);
+    carousel.addEventListener('mouseleave', startAuto);
+
+    // ── Touch swipe ──
+    let touchStartX = 0;
+    let touchDeltaX = 0;
+    let isTouching  = false;
+
+    carousel.addEventListener('touchstart', e => {
+      touchStartX = e.touches[0].clientX;
+      touchDeltaX = 0;
+      isTouching  = true;
+      stopAuto();
+      track.classList.add('no-transition');
+    }, { passive: true });
+
+    carousel.addEventListener('touchmove', e => {
+      if (!isTouching) return;
+      touchDeltaX = e.touches[0].clientX - touchStartX;
+      const base = current * 100;
+      const offset = (touchDeltaX / carousel.offsetWidth) * 100;
+      track.style.transform = 'translateX(calc(-' + base + '% + ' + offset + 'px))';
+    }, { passive: true });
+
+    carousel.addEventListener('touchend', () => {
+      isTouching = false;
+      track.classList.remove('no-transition');
+      if (touchDeltaX < -50) goTo(current + 1);
+      else if (touchDeltaX > 50) goTo(current - 1);
+      else goTo(current);
+      startAuto();
+    });
+
+    // ── Mouse drag ──
+    let mouseStartX = 0;
+    let mouseDeltaX = 0;
+    let isDragging  = false;
+
+    carousel.addEventListener('mousedown', e => {
+      mouseStartX = e.clientX;
+      mouseDeltaX = 0;
+      isDragging  = true;
+      carousel.classList.add('is-dragging');
+      stopAuto();
+      track.classList.add('no-transition');
+      e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      mouseDeltaX = e.clientX - mouseStartX;
+      const base   = current * 100;
+      const offset = (mouseDeltaX / carousel.offsetWidth) * 100;
+      track.style.transform = 'translateX(calc(-' + base + '% + ' + offset + 'px))';
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (!isDragging) return;
+      isDragging = false;
+      carousel.classList.remove('is-dragging');
+      track.classList.remove('no-transition');
+      if (mouseDeltaX < -50) goTo(current + 1);
+      else if (mouseDeltaX > 50) goTo(current - 1);
+      else goTo(current);
+      startAuto();
+    });
+
+    // kick off when section enters view
     const section = document.querySelector('.review-section');
-    const watcher = new MutationObserver(() => {
+    const starWatcher = new MutationObserver(() => {
       if (section.classList.contains('in-view')) {
-        setTimeout(startTyping, 350);
-        watcher.disconnect();
+        startAuto();
+        starWatcher.disconnect();
       }
     });
-    watcher.observe(section, { attributes: true, attributeFilter: ['class'] });
-    // also fire if already in-view on load
-    if (section.classList.contains('in-view')) setTimeout(startTyping, 350);
+    starWatcher.observe(section, { attributes: true, attributeFilter: ['class'] });
+    if (section.classList.contains('in-view')) startAuto();
   })();
 
   /* ─── Tweaks panel: Mood / Palette / Atmosphere ─── */
