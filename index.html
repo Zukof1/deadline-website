@@ -1,3974 +1,450 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Deadline. — Never Miss an Assignment Again</title>
-<meta name="description" content="The simplest way for students to track assignments and due dates. Free, no login, no ads. Built by a student, for students.">
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --black: #080808;
-    --dark: #111111;
-    --card: #141414;
-    --card-2: #181818;
-    --border: #1e1e1e;
-    --border-2: #262626;
-    --white: #ffffff;
-    --muted: #555555;
-    --muted-2: #8a8a8a;
-    --green: #22c55e;
-    --yellow: #eab308;
-    --orange: #f97316;
-    --red: #ef4444;
-    --mono: 'JetBrains Mono', ui-monospace, monospace;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--black);
-    color: var(--white);
-    font-family: 'Satoshi', sans-serif;
-    font-weight: 300;
-    overflow-x: hidden;
-    cursor: default;
-  }
-
-  /* ── NOISE OVERLAY ── */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.4;
-  }
-
-  /* ── SCROLL PROGRESS BAR ── */
-  .scroll-progress {
-    position: fixed;
-    top: 0; left: 0;
-    height: 2px;
-    width: 0%;
-    background: linear-gradient(90deg, var(--green), var(--yellow) 40%, var(--orange) 75%, var(--red));
-    z-index: 200;
-    transition: width 0.08s linear;
-  }
-
-  /* ── NAV ── */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    padding: 20px 48px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    backdrop-filter: blur(20px);
-    background: rgba(8,8,8,0.8);
-  }
-
-  .nav-logo {
-    font-family: 'Satoshi', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--white);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: baseline;
-  }
-  .nav-logo span { color: var(--green); display: inline-block; transition: transform .3s ease; }
-  .nav-logo:hover span { transform: translateY(-3px) scale(1.5); }
-
-  .nav-time {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--muted);
-    text-transform: uppercase;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-  .nav-time .dot {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: var(--green);
-    animation: pulse-dot 2s ease-in-out infinite;
-  }
-
-  .nav-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 22px;
-    background: var(--white);
-    color: var(--black);
-    border-radius: 100px;
-    font-size: 13px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.2s;
-    letter-spacing: 0.2px;
-  }
-
-  .nav-cta:hover { background: #e0e0e0; transform: translateY(-1px); }
-
-  /* ── HERO ── */
-  .hero {
-    position: relative;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 140px 24px 80px;
-    z-index: 1;
-    overflow: hidden;
-  }
-
-  /* hero grid backdrop */
-  .hero-grid {
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-    background-size: 64px 64px;
-    mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
-    -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
-    pointer-events: none;
-    animation: grid-drift 30s linear infinite;
-  }
-  @keyframes grid-drift {
-    from { background-position: 0 0, 0 0; }
-    to { background-position: 64px 64px, 64px 64px; }
-  }
-
-  /* hero spotlight follows cursor */
-  .hero-spotlight {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(circle 400px at var(--mx, 50%) var(--my, 50%), rgba(34,197,94,0.08), transparent 60%);
-    transition: background-position 0.3s;
-  }
-
-  .hero-inner { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
-
-  .hero-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 7px 18px;
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    font-size: 11px;
-    color: var(--muted-2);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 40px;
-    animation: fadeUp 0.8s ease both;
-    background: rgba(20,20,20,0.4);
-    font-family: var(--mono);
-  }
-
-  .hero-eyebrow-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--green);
-    animation: pulse-dot 2s ease-in-out infinite;
-    box-shadow: 0 0 12px var(--green);
-  }
-  .hero-eyebrow .sep { color: var(--border-2); }
-  .hero-eyebrow .count { color: var(--white); font-weight: 500; }
-
-  @keyframes pulse-dot {
-    0%,100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(1.3); }
-  }
-
-  .hero h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(56px, 11vw, 140px);
-    line-height: 0.92;
-    letter-spacing: -4px;
-    margin-bottom: 36px;
-    font-weight: 400;
-  }
-
-  .hero h1 .line {
-    display: block;
-    overflow: hidden;
-  }
-
-  .hero h1 .line > span {
-    display: inline-block;
-    transform: translateY(110%);
-    animation: rise 0.9s cubic-bezier(.2,.7,.2,1) forwards;
-  }
-  .hero h1 .line:nth-child(1) > span { animation-delay: 0.05s; }
-  .hero h1 .line:nth-child(2) > span { animation-delay: 0.18s; }
-  .hero h1 .line:nth-child(3) > span { animation-delay: 0.31s; }
-
-  @keyframes rise {
-    from { transform: translateY(110%); }
-    to { transform: translateY(0); }
-  }
-
-  .hero h1 em {
-    font-style: italic;
-    color: rgba(255,255,255,0.35);
-    font-family: 'DM Serif Display', serif;
-  }
-
-  /* scramble target — keeps inherited italic colour, no green flash */
-  .scramble {
-    display: inline-block;
-    font-style: italic;
-    position: relative;
-  }
-
-  .hero-sub {
-    font-size: clamp(15px, 1.5vw, 18px);
-    color: var(--muted-2);
-    max-width: 520px;
-    line-height: 1.7;
-    margin-bottom: 44px;
-    animation: fadeUp 0.8s 0.55s ease both;
-    font-weight: 300;
-  }
-
-  .hero-actions {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: center;
-    animation: fadeUp 0.8s 0.7s ease both;
-    margin-bottom: 56px;
-  }
-
-  /* Live countdown chip below CTA */
-  .live-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border: 1px solid rgba(239,68,68,0.25);
-    border-left: 4px solid var(--red);
-    border-radius: 16px;
-    background: rgba(239,68,68,0.05);
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 1px;
-    color: var(--muted-2);
-    animation: fadeUp 0.8s 0.85s ease both;
-    position: relative;
-    overflow: hidden;
-  }
-  .live-chip .live-icon {
-    width: 36px; height: 36px;
-    border-radius: 10px;
-    background: rgba(239,68,68,0.12);
-    display: grid; place-items: center;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-  .live-chip .live-label { color: var(--muted); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
-  .live-chip .live-title { color: var(--white); font-family: 'Satoshi', sans-serif; font-weight: 600; letter-spacing: -0.2px; font-size: 14px; }
-  .live-chip .live-time { color: var(--red); font-weight: 600; font-size: 13px; margin-left: 4px; }
-  .live-chip .live-pulse {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--red);
-    animation: pulse-line 1.2s ease-in-out infinite;
-  }
-
-  /* ── APP STORE BADGE ── */
-  .appstore-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 28px;
-    background: var(--white);
-    color: var(--black);
-    border-radius: 14px;
-    text-decoration: none;
-    transition: all 0.25s;
-    position: relative;
-    overflow: hidden;
-  }
-  .appstore-badge::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(120deg, transparent 30%, rgba(0,0,0,0.06) 50%, transparent 70%);
-    transform: translateX(-100%);
-    transition: transform 0.6s ease;
-  }
-  .appstore-badge:hover { background: #e8e8e8; transform: translateY(-2px); box-shadow: 0 12px 40px rgba(255,255,255,0.1); }
-  .appstore-badge:hover::after { transform: translateX(100%); }
-
-  .appstore-badge-left svg { display: block; }
-
-  .appstore-badge-text {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1px;
-  }
-
-  .appstore-badge-text .small {
-    font-size: 10px;
-    font-weight: 400;
-    letter-spacing: 0.5px;
-    color: #333;
-    text-transform: uppercase;
-  }
-
-  .appstore-badge-text .big {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--black);
-    letter-spacing: -0.3px;
-    line-height: 1;
-  }
-
-  .ghost-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 14px 22px;
-    border: 1px solid var(--border-2);
-    border-radius: 14px;
-    color: var(--white);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 400;
-    letter-spacing: 0.2px;
-    transition: all .2s;
-    font-family: 'Satoshi', sans-serif;
-  }
-  .ghost-btn:hover { border-color: var(--muted); background: var(--card); }
-  .ghost-btn .arrow { transition: transform .3s; }
-  .ghost-btn:hover .arrow { transform: translate(2px, -2px); }
-
-  /* ── SCROLL INDICATOR ── */
-  .scroll-hint {
-    position: absolute;
-    bottom: 32px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    color: var(--muted);
-    font-size: 10px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-family: var(--mono);
-    animation: fadeUp 1s 1s ease both;
-    z-index: 3;
-  }
-
-  .scroll-line {
-    width: 1px;
-    height: 48px;
-    background: linear-gradient(to bottom, transparent, var(--muted));
-    position: relative;
-    overflow: hidden;
-  }
-  .scroll-line::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: 0; right: 0;
-    height: 30%;
-    background: linear-gradient(to bottom, transparent, var(--green));
-    animation: scrollLine 2.2s ease-in-out infinite;
-  }
-
-  @keyframes scrollLine {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(350%); }
-  }
-
-  /* ── DEPARTURES BOARD ── */
-  .board-wrap {
-    position: relative;
-    z-index: 1;
-    padding: 56px 48px;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    background:
-      linear-gradient(180deg, rgba(20,20,20,0.4), rgba(8,8,8,0.4)),
-      repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
-  }
-  .board-inner {
-    max-width: 1180px;
-    margin: 0 auto;
-  }
-  .board-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 28px;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .board-title { display: inline-flex; align-items: center; gap: 12px; color: var(--white); }
-  .board-lamp {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 10px var(--green);
-    animation: pulse-dot 2s ease-in-out infinite;
-  }
-  .board-clock { color: var(--muted-2); display: inline-flex; gap: 10px; align-items: center; }
-  .board-clock .dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 6px var(--green);
-    animation: pulse-dot 1.4s ease-in-out infinite;
-  }
-  .board-clock #boardClock { color: var(--white); font-variant-numeric: tabular-nums; }
-
-  /* ── SAMPLE APP MOCK (replaces departures table) ── */
-  .app-mock {
-    border: 1px solid var(--border);
-    border-radius: 22px;
-    overflow: hidden;
-    background: var(--card);
-    padding: 32px;
-    position: relative;
-  }
-  .app-mock::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at 75% -10%, rgba(249,115,22,0.10), transparent 55%);
-    pointer-events: none;
-  }
-  .app-mock-inner { position: relative; z-index: 1; }
-  .app-mock-head {
-    margin-bottom: 32px;
-    padding-bottom: 28px;
-    border-bottom: 1px solid var(--border);
-  }
-  .app-mock-subject {
-    font-family: 'Satoshi', sans-serif;
-    font-size: clamp(26px, 3.2vw, 36px);
-    font-weight: 700;
-    letter-spacing: -0.8px;
-    margin-bottom: 14px;
-    color: var(--white);
-    line-height: 1;
-  }
-  .app-mock-meta {
-    display: flex; gap: 8px; align-items: center;
-    flex-wrap: wrap;
-  }
-  .chip {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 5px 11px;
-    border-radius: 6px;
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    font-weight: 500;
-    text-transform: uppercase;
-  }
-  .chip-green { background: rgba(34,197,94,0.10); color: var(--green); border: 1px solid rgba(34,197,94,0.28); }
-  .chip-orange { background: rgba(249,115,22,0.10); color: var(--orange); border: 1px solid rgba(249,115,22,0.30); }
-  .chip-orange .chip-icon {
-    width: 12px; height: 12px;
-    font-size: 12px;
-    display: inline-grid; place-items: center;
-  }
-  .chip-orange #nextDue {
-    color: var(--orange);
-    font-variant-numeric: tabular-nums;
-    margin-left: 2px;
-  }
-
-  .app-mock-section-head {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 16px;
-  }
-  .app-mock-section-label {
-    font-family: 'Satoshi', sans-serif;
-    font-size: 19px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-    color: var(--white);
-  }
-  .app-mock-plus {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    background: var(--orange);
-    color: var(--black);
-    display: grid; place-items: center;
-    font-size: 18px;
-    font-weight: 700;
-    box-shadow: 0 0 24px rgba(249,115,22,0.4);
-    line-height: 1;
-  }
-
-  .app-cards {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .app-card {
-    position: relative;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-left-width: 4px;
-    border-radius: 18px;
-    padding: 16px 18px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    overflow: hidden;
-    transition: transform .25s ease;
-  }
-  .app-card:hover { transform: translateY(-1px); }
-
-  .app-card[data-color="green"] { border-left-color: var(--green); border-color: rgba(34,197,94,0.2); background: rgba(34,197,94,0.04); }
-  .app-card[data-color="yellow"] { border-left-color: var(--yellow); border-color: rgba(234,179,8,0.2); background: rgba(234,179,8,0.04); }
-  .app-card[data-color="orange"] { border-left-color: var(--orange); border-color: rgba(249,115,22,0.2); background: rgba(249,115,22,0.04); }
-  .app-card[data-color="red"] { border-left-color: var(--red); border-color: rgba(239,68,68,0.25); background: rgba(239,68,68,0.05); }
-
-  .ac-icon {
-    width: 40px; height: 40px;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-  .app-card[data-color="green"] .ac-icon { background: rgba(34,197,94,0.12); }
-  .app-card[data-color="yellow"] .ac-icon { background: rgba(234,179,8,0.12); }
-  .app-card[data-color="orange"] .ac-icon { background: rgba(249,115,22,0.12); }
-  .app-card[data-color="red"] .ac-icon { background: rgba(239,68,68,0.12); }
-
-  .ac-body { min-width: 0; flex: 1; }
-  .ac-title {
-    color: var(--white);
-    font-family: 'Satoshi', sans-serif;
-    font-weight: 600;
-    font-size: 15px;
-    letter-spacing: -0.2px;
-    margin: 0 0 3px;
-    line-height: 1.25;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .ac-due {
-    color: var(--muted-2);
-    font-size: 12px;
-    font-family: var(--mono);
-    letter-spacing: 0.2px;
-  }
-  .ac-time {
-    font-family: var(--mono);
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .app-card[data-color="green"] .ac-time { color: var(--green); }
-  .app-card[data-color="yellow"] .ac-time { color: var(--yellow); }
-  .app-card[data-color="orange"] .ac-time { color: var(--orange); }
-  .app-card[data-color="red"] .ac-time { color: var(--red); }
-
-  .ac-line {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 2px;
-    opacity: 0.9;
-  }
-  .app-card[data-color="green"] .ac-line { background: var(--green); }
-  .app-card[data-color="yellow"] .ac-line { background: var(--yellow); }
-  .app-card[data-color="orange"] .ac-line { background: var(--orange); }
-  .app-card[data-color="red"] .ac-line { background: var(--red); animation: pulse-line 1.2s ease-in-out infinite; }
-
-  /* split-flap reel */
-  .flip {
-    display: inline-block;
-    position: relative;
-    overflow: hidden;
-    line-height: 1.15;
-    vertical-align: baseline;
-    min-width: 7ch;
-  }
-  .flip-cur, .flip-nxt {
-    display: inline-block;
-    will-change: transform, opacity;
-  }
-  .flip-nxt {
-    position: absolute;
-    left: 0; top: 0;
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  .flip.flipping .flip-cur { animation: flip-up .55s cubic-bezier(.4,0,.2,1) forwards; }
-  .flip.flipping .flip-nxt { animation: flip-in .55s cubic-bezier(.4,0,.2,1) forwards; }
-  @keyframes flip-up {
-    0%   { transform: translateY(0);     opacity: 1; }
-    49%  { transform: translateY(-55%);  opacity: 0.55; }
-    50%  { transform: translateY(-55%);  opacity: 0; }
-    100% { transform: translateY(-100%); opacity: 0; }
-  }
-  @keyframes flip-in {
-    0%   { transform: translateY(100%);  opacity: 0; }
-    50%  { transform: translateY(55%);   opacity: 0; }
-    51%  { transform: translateY(55%);   opacity: 0.55; }
-    100% { transform: translateY(0);     opacity: 1; }
-  }
-
-
-  /* ── SECTIONS ── */
-  .section {
-    position: relative;
-    z-index: 1;
-    padding: 140px 48px 60px;
-    max-width: 1180px;
-    margin: 0 auto;
-  }
-
-  .section-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 24px;
-    margin-bottom: 64px;
-    flex-wrap: wrap;
-  }
-
-  .section-label {
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--muted);
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    font-family: var(--mono);
-  }
-  .section-label::before {
-    content: '';
-    width: 24px; height: 1px;
-    background: var(--muted);
-  }
-
-  .section-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(36px, 5vw, 64px);
-    letter-spacing: -1.5px;
-    line-height: 1;
-    max-width: 720px;
-    font-weight: 400;
-  }
-  .section-title em {
-    font-style: italic;
-    color: rgba(255,255,255,0.35);
-  }
-  .section-aside {
-    font-size: 13px;
-    color: var(--muted);
-    max-width: 280px;
-    line-height: 1.7;
-  }
-
-  /* ── FEATURES ── */
-  .features-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 12px;
-  }
-
-  /* F/01 — hero card, full width */
-  .fc-hero {
-    grid-column: 1 / -1;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 40px 44px;
-    display: grid;
-    grid-template-columns: 1fr 1.1fr;
-    gap: 48px;
-    align-items: center;
-    overflow: hidden;
-    position: relative;
-  }
-  .fc-hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at 80% 50%, rgba(34,197,94,0.06) 0%, transparent 60%);
-    pointer-events: none;
-  }
-  .fc-hero-text { position: relative; z-index: 1; }
-  .fc-hero-demo { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 8px; }
-
-  /* urgency shift demo inside F/01 */
-  .fhd-card {
-    border-radius: 14px;
-    padding: 14px 18px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.6s ease;
-    border: 1px solid;
-    border-left-width: 4px;
-  }
-  .fhd-icon {
-    width: 36px; height: 36px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 17px; flex-shrink: 0;
-    transition: background 0.6s;
-  }
-  .fhd-name { font-size: 14px; font-weight: 600; color: var(--white); font-family: 'Satoshi', sans-serif; }
-  .fhd-sub { font-size: 11px; color: var(--muted-2); font-family: var(--mono); margin-top: 2px; }
-  .fhd-time { margin-left: auto; font-family: var(--mono); font-size: 13px; font-weight: 600; flex-shrink: 0; transition: color 0.6s; font-variant-numeric: tabular-nums; }
-  .fhd-line { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; transition: background 0.6s; }
-  .fhd-card.is-red .fhd-line { animation: pulse-line 1.2s ease-in-out infinite; }
-
-  .fhd-card.is-green { background: rgba(34,197,94,0.05); border-color: rgba(34,197,94,0.2); border-left-color: var(--green); }
-  .fhd-card.is-green .fhd-icon { background: rgba(34,197,94,0.12); }
-  .fhd-card.is-green .fhd-time { color: var(--green); }
-  .fhd-card.is-green .fhd-line { background: var(--green); }
-
-  .fhd-card.is-yellow { background: rgba(234,179,8,0.05); border-color: rgba(234,179,8,0.2); border-left-color: var(--yellow); }
-  .fhd-card.is-yellow .fhd-icon { background: rgba(234,179,8,0.12); }
-  .fhd-card.is-yellow .fhd-time { color: var(--yellow); }
-  .fhd-card.is-yellow .fhd-line { background: var(--yellow); }
-
-  .fhd-card.is-orange { background: rgba(249,115,22,0.05); border-color: rgba(249,115,22,0.2); border-left-color: var(--orange); }
-  .fhd-card.is-orange .fhd-icon { background: rgba(249,115,22,0.12); }
-  .fhd-card.is-orange .fhd-time { color: var(--orange); }
-  .fhd-card.is-orange .fhd-line { background: var(--orange); }
-
-  .fhd-card.is-red { background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.25); border-left-color: var(--red); }
-  .fhd-card.is-red .fhd-icon { background: rgba(239,68,68,0.12); }
-  .fhd-card.is-red .fhd-time { color: var(--red); }
-  .fhd-card.is-red .fhd-line { background: var(--red); }
-
-  /* standard secondary feature cards */
-  .fc {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 32px 28px;
-    position: relative;
-    overflow: hidden;
-    transition: background 0.2s, border-color 0.2s;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-  }
-  .fc:hover { background: var(--card-2); border-color: var(--border-2); }
-
-  .fc-num {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    color: var(--muted);
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .fc-num::after { content: ''; flex: 1; height: 1px; background: var(--border-2); }
-
-  .fc-title {
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: -0.3px;
-    color: var(--white);
-    margin-bottom: 8px;
-    font-family: 'Satoshi', sans-serif;
-  }
-  .fc-desc {
-    font-size: 13px;
-    color: var(--muted-2);
-    line-height: 1.7;
-    flex: 1;
-  }
-  .fc-visual {
-    margin-top: 24px;
-  }
-
-  /* F/02 — colour swatches */
-  .fc-swatches {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .fc-swatch {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  /* F/03 — complete & undo */
-  .fc-task {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-size: 13px;
-    font-family: 'Satoshi', sans-serif;
-    font-weight: 500;
-  }
-  .fc-task.done { opacity: 0.45; }
-  .fc-task.done .fc-task-name { text-decoration: line-through; color: var(--muted); }
-  .fc-check {
-    width: 20px; height: 20px;
-    border-radius: 50%;
-    border: 1.5px solid var(--border-2);
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px;
-  }
-  .fc-task.done .fc-check { background: var(--green); border-color: var(--green); color: #000; }
-  .fc-task-name { flex: 1; color: var(--white); }
-  .fc-undo {
-    margin-top: 8px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 1px;
-    color: var(--green);
-    text-transform: uppercase;
-    padding: 5px 10px;
-    background: rgba(34,197,94,0.08);
-    border-radius: 6px;
-    border: 1px solid rgba(34,197,94,0.2);
-    width: fit-content;
-  }
-
-  /* F/04 — live seconds */
-  .fc-hms {
-    display: flex;
-    gap: 6px;
-    align-items: baseline;
-  }
-  .fc-hms-unit {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-  .fc-hms-val {
-    font-family: 'DM Serif Display', serif;
-    font-size: 36px;
-    font-weight: 400;
-    letter-spacing: -2px;
-    color: var(--red);
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-  }
-  .fc-hms-label {
-    font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 2px;
-    color: var(--muted);
-    text-transform: uppercase;
-  }
-  .fc-hms-sep {
-    font-family: 'DM Serif Display', serif;
-    font-size: 28px;
-    color: var(--border-2);
-    margin-bottom: 12px;
-  }
-
-  /* F/05 — swipe to delete */
-  .fc-swipe-wrap {
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    height: 56px;
-  }
-  .fc-swipe-delete {
-    position: absolute;
-    inset: 0;
-    background: rgba(239,68,68,0.15);
-    border: 1px solid rgba(239,68,68,0.25);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 16px;
-    font-size: 18px;
-  }
-  .fc-swipe-card {
-    position: absolute;
-    inset: 0;
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0 14px;
-    transform: translateX(0);
-    animation: swipe-demo 3.5s ease-in-out infinite;
-  }
-  @keyframes swipe-demo {
-    0%,30%  { transform: translateX(0); }
-    55%,75% { transform: translateX(-68px); }
-    90%,100%{ transform: translateX(0); }
-  }
-  .fc-swipe-icon { font-size: 18px; flex-shrink: 0; }
-  .fc-swipe-name { font-size: 13px; font-weight: 600; color: var(--white); font-family: 'Satoshi', sans-serif; }
-  .fc-swipe-sub { font-size: 11px; color: var(--muted-2); font-family: var(--mono); margin-top: 1px; }
-  .fc-swipe-hint {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-top: 10px;
-    text-align: right;
-  }
-  .fc-clear-row { margin-top: 14px; }
-  .fc-clear-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 1px;
-    color: var(--muted-2);
-    background: var(--dark);
-    border: 1px solid var(--border-2);
-    border-radius: 8px;
-    padding: 6px 10px;
-  }
-
-  /* F/07 — notifications */
-  .fc-notif-cycle {
-    position: relative;
-    height: 96px;
-    overflow: hidden;
-  }
-  .fc-notif {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 14px;
-    padding: 12px 14px;
-    position: relative;
-    overflow: hidden;
-  }
-  .fc-notif-slide {
-    position: absolute;
-    inset: 0;
-    border-radius: 14px;
-    padding: 12px 14px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    overflow: hidden;
-    opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 0.4s ease, transform 0.4s ease;
-    pointer-events: none;
-  }
-  .fc-notif-slide.active {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-  }
-  .fc-notif-slide.exit {
-    opacity: 0;
-    transform: translateY(-14px);
-  }
-  .fc-notif-dots {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-    margin-top: 10px;
-  }
-  .fc-notif-dot {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: var(--border-2);
-    transition: background 0.3s, transform 0.3s;
-  }
-  .fc-notif-dot.active {
-    background: var(--muted-2);
-    transform: scale(1.3);
-  }
-  .fc-notif-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-  }
-  .fc-notif-icon {
-    width: 22px; height: 22px;
-    border-radius: 6px;
-    background: var(--black);
-    border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px;
-    flex-shrink: 0;
-  }
-  .fc-notif-app {
-    font-size: 11px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.4);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    flex: 1;
-    font-family: 'Satoshi', sans-serif;
-  }
-  .fc-notif-time {
-    font-size: 10px;
-    color: rgba(255,255,255,0.2);
-    font-family: var(--mono);
-    letter-spacing: 0.5px;
-  }
-  .fc-notif-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--white);
-    margin-bottom: 2px;
-    font-family: 'Satoshi', sans-serif;
-    letter-spacing: -0.2px;
-  }
-  .fc-notif-body {
-    font-size: 12px;
-    color: rgba(255,255,255,0.45);
-    line-height: 1.5;
-  }
-  .fc-notif-bar {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--red);
-    animation: pulse-line 1.4s ease-in-out infinite;
-  }
-
-  /* F/06 — offline */
-  .fc-offline-badges {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .fc-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 1px;
-    width: fit-content;
-  }
-  .fc-badge.good { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); color: var(--green); }
-  .fc-badge.bad { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15); color: var(--muted); text-decoration: line-through; }
-  .fc-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
-
-  @media (max-width: 900px) {
-    .features-grid { grid-template-columns: 1fr 1fr; }
-    .fc-hero { grid-column: 1 / -1; grid-template-columns: 1fr; gap: 28px; }
-  }
-  @media (max-width: 600px) {
-    .features-grid { grid-template-columns: 1fr; }
-    .fc-hero { padding: 28px 24px; }
-    .fc { padding: 28px 22px; }
-  }
-
-  /* ── URGENCY DEMO (auto-playing) ── */
-  .demo-section {
-    position: relative;
-    z-index: 1;
-    padding: 60px 48px 60px;
-    max-width: 1180px;
-    margin: 0 auto;
-  }
-
-  .demo-stage {
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    background: var(--card);
-    overflow: hidden;
-    display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    min-height: 480px;
-  }
-
-  .demo-left {
-    padding: 48px;
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 32px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .demo-left::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at 30% 30%, var(--demo-glow, rgba(34,197,94,0.08)) 0%, transparent 60%);
-    transition: background 1.5s ease;
-    pointer-events: none;
-  }
-
-  .demo-meta {
-    position: relative;
-    z-index: 1;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    color: var(--muted);
-    text-transform: uppercase;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .demo-meta .demo-state {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: 13px; color: var(--white);
-    letter-spacing: 1px;
-  }
-  .demo-meta .demo-state .dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--demo-color, var(--green));
-    box-shadow: 0 0 12px var(--demo-color, var(--green));
-    transition: background 0.6s, box-shadow 0.6s;
-  }
-
-  .demo-clock {
-    position: relative;
-    z-index: 1;
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(64px, 12vw, 156px);
-    line-height: 0.9;
-    letter-spacing: -5px;
-    color: var(--demo-color, var(--green));
-    transition: color 0.6s ease;
-    font-variant-numeric: tabular-nums;
-  }
-  .demo-clock .unit {
-    color: rgba(255,255,255,0.25);
-    font-size: 0.3em;
-    margin-left: 12px;
-    letter-spacing: -1px;
-    vertical-align: super;
-    font-style: italic;
-  }
-
-  .demo-progress-row {
-    position: relative; z-index: 1;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .demo-progress-bar {
-    flex: 1;
-    height: 2px;
-    background: var(--border-2);
-    border-radius: 2px;
-    overflow: hidden;
-    position: relative;
-  }
-  .demo-progress-fill {
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 0%;
-    background: var(--demo-color, var(--green));
-    transition: width 0.6s ease, background 0.6s ease;
-  }
-
-  .demo-right {
-    padding: 36px 36px 36px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    justify-content: center;
-  }
-
-  .demo-card {
-    position: relative;
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px 20px;
-    overflow: hidden;
-    transition: transform .5s ease, opacity .5s ease, border-color .5s ease;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  .demo-card .demo-card-line {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 2px;
-    background: currentColor;
-    transition: background .6s, opacity .6s;
-    opacity: 0.9;
-  }
-  .demo-card.urgent .demo-card-line {
-    animation: pulse-line 1.2s ease-in-out infinite;
-  }
-  .demo-card .demo-card-icon {
-    width: 32px; height: 32px;
-    border-radius: 8px;
-    background: var(--card-2);
-    border: 1px solid var(--border-2);
-    display: grid; place-items: center;
-    color: var(--muted-2);
-    font-size: 14px;
-  }
-  .demo-card .demo-card-title {
-    font-size: 14px; font-weight: 500;
-    letter-spacing: -0.2px;
-    color: var(--white);
-  }
-  .demo-card .demo-card-sub {
-    font-size: 11px; color: var(--muted);
-    font-family: var(--mono);
-    letter-spacing: 1px;
-    margin-top: 2px;
-    text-transform: uppercase;
-  }
-  .demo-card .demo-card-time {
-    margin-left: auto;
-    font-family: var(--mono);
-    font-size: 13px;
-    font-weight: 500;
-    color: currentColor;
-    letter-spacing: 0.5px;
-    font-variant-numeric: tabular-nums;
-  }
-  .demo-card.is-green { color: var(--green); }
-  .demo-card.is-yellow { color: var(--yellow); }
-  .demo-card.is-orange { color: var(--orange); }
-  .demo-card.is-red { color: var(--red); border-color: rgba(239,68,68,0.25); }
-
-  @keyframes pulse-line {
-    0%,100% { opacity: 1; }
-    50% { opacity: 0.2; }
-  }
-
-  /* ── URGENCY STATIC CARDS ── */
-  .urgency-section {
-    position: relative;
-    z-index: 1;
-    padding: 60px 48px 60px;
-    max-width: 1180px;
-    margin: 0 auto;
-  }
-
-  .urgency-cards {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-  }
-
-  .urgency-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px 24px;
-    position: relative;
-    overflow: hidden;
-    transition: transform .3s;
-  }
-  .urgency-card:hover { transform: translateY(-3px); }
-
-  .urgency-card-time {
-    font-size: 11px;
-    color: var(--muted);
-    margin-bottom: 12px;
-    font-family: var(--mono);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-  }
-
-  .urgency-card-title {
-    font-size: 15px;
-    font-weight: 500;
-    margin-bottom: 4px;
-  }
-
-  .urgency-card-due {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 24px;
-  }
-
-  .urgency-card-badge {
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    font-family: var(--mono);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .urgency-line {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 2px;
-  }
-
-  .card-green .urgency-line { background: var(--green); }
-  .card-green .urgency-card-badge { color: var(--green); }
-  .card-yellow .urgency-line { background: var(--yellow); }
-  .card-yellow .urgency-card-badge { color: var(--yellow); }
-  .card-orange .urgency-line { background: var(--orange); }
-  .card-orange .urgency-card-badge { color: var(--orange); }
-  .card-red .urgency-line { background: var(--red); animation: pulse-line 1.4s ease-in-out infinite; }
-  .card-red .urgency-card-badge { color: var(--red); }
-
-  /* ── STATS BAND ── */
-  .stats-band {
-    position: relative;
-    z-index: 1;
-    padding: 60px 48px;
-    max-width: 1180px;
-    margin: 0 auto;
-  }
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    overflow: hidden;
-    background: var(--border);
-    gap: 1px;
-  }
-  .stat {
-    background: var(--card);
-    padding: 40px 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .stat-num {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(48px, 6vw, 72px);
-    line-height: 1;
-    letter-spacing: -2px;
-    color: var(--white);
-    font-variant-numeric: tabular-nums;
-  }
-  .stat-num .pct { color: var(--green); font-style: italic; }
-  .stat-label {
-    font-size: 13px;
-    color: var(--muted-2);
-    letter-spacing: 0.3px;
-  }
-  .stat-tag {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-top: 8px;
-  }
-
-  /* ── REVIEW SECTION ── */
-  .review-section {
-    position: relative;
-    z-index: 1;
-    padding: 60px 48px 60px;
-    max-width: 1180px;
-    margin: 0 auto;
-  }
-
-  .review-card {
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 56px;
-    background: var(--card);
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-  }
-
-  .review-card::before {
-    content: '';
-    position: absolute;
-    top: -1px; left: 50%;
-    transform: translateX(-50%);
-    width: 160px; height: 1px;
-    background: linear-gradient(to right, transparent, var(--yellow), transparent);
-  }
-
-  .review-stars {
-    display: flex;
-    gap: 6px;
-  }
-
-  .review-stars span {
-    color: var(--yellow);
-    font-size: 22px;
-    display: inline-block;
-    opacity: 0;
-    transform: scale(0.2) rotate(-30deg);
-    transition: opacity .35s cubic-bezier(.5,1.5,.3,1),
-                transform .55s cubic-bezier(.5,1.6,.3,1);
-    transform-origin: center;
-  }
-  .review-section.in-view .review-stars span { opacity: 1; transform: scale(1) rotate(0); }
-  .review-section.in-view .review-stars span:nth-child(1) { transition-delay: .08s; }
-  .review-section.in-view .review-stars span:nth-child(2) { transition-delay: .18s; }
-  .review-section.in-view .review-stars span:nth-child(3) { transition-delay: .28s; }
-  .review-section.in-view .review-stars span:nth-child(4) { transition-delay: .38s; }
-  .review-section.in-view .review-stars span:nth-child(5) { transition-delay: .48s; }
-  /* show stars on non-active slides too — carousel handles order */
-  .review-slide .review-stars span { opacity: 1; transform: scale(1) rotate(0); transition: opacity .35s cubic-bezier(.5,1.5,.3,1), transform .55s cubic-bezier(.5,1.6,.3,1); }
-
-  .review-quote {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(22px, 3vw, 36px);
-    line-height: 1.3;
-    letter-spacing: -0.5px;
-    color: var(--white);
-    max-width: 820px;
-    font-weight: 400;
-  }
-  .review-quote em {
-    font-style: italic;
-    color: rgba(255,255,255,0.45);
-  }
-  .review-quote .tc {
-    opacity: 0;
-    transition: opacity 0.12s linear;
-  }
-  .review-quote .tc.shown { opacity: 1; }
-  .review-quote .type-cursor {
-    display: inline-block;
-    width: 3px;
-    height: 0.85em;
-    background: var(--green);
-    vertical-align: -0.08em;
-    margin-left: 6px;
-    opacity: 0;
-    border-radius: 1px;
-    box-shadow: 0 0 8px rgba(34,197,94,0.6);
-  }
-  .review-section.in-view .review-quote .type-cursor {
-    opacity: 1;
-    animation: cursor-blink 0.9s steps(1) infinite;
-  }
-  .review-quote .type-cursor.faded { opacity: 0; transition: opacity .4s ease; animation: none; }
-  @keyframes cursor-blink {
-    0%, 50% { opacity: 1; }
-    50.01%, 100% { opacity: 0; }
-  }
-
-  .review-meta {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .review-avatar {
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    background: var(--dark);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 500;
-  }
-
-  .review-author {
-    font-size: 13px;
-    color: var(--muted);
-  }
-
-  .review-author strong {
-    color: var(--white);
-    font-weight: 500;
-    display: block;
-    margin-bottom: 2px;
-  }
-
-  .review-source {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    font-family: var(--mono);
-  }
-
-  /* ── ZERO BS ── */
-  .zero-bs {
-    position: relative;
-    z-index: 1;
-    padding: 60px 48px;
-    max-width: 1180px;
-    margin: 0 auto;
-  }
-
-  .zero-bs-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-
-  .zero-card {
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 32px 28px;
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    background: var(--card);
-    transition: background .2s, transform .2s;
-  }
-  .zero-card:hover { background: var(--card-2); transform: translateY(-2px); }
-
-  .zero-check {
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    background: rgba(34,197,94,0.1);
-    border: 1px solid rgba(34,197,94,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    flex-shrink: 0;
-    margin-top: 2px;
-    color: var(--green);
-  }
-  .zero-text { font-size: 15px; font-weight: 500; letter-spacing: -0.2px; }
-  .zero-sub { font-size: 13px; color: var(--muted-2); margin-top: 6px; line-height: 1.6; }
-
-  /* ── WHATS NEXT ── */
-  .whats-next {
-    position: relative;
-    z-index: 1;
-    padding: 60px 48px;
-    max-width: 1180px;
-    margin: 0 auto;
-  }
-
-  .whats-next-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
-  }
-
-  .next-card {
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 40px;
-    background: var(--card);
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-  }
-
-  .next-card-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 5px 12px;
-    border-radius: 100px;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    width: fit-content;
-    font-family: var(--mono);
-  }
-
-  .label-v11 {
-    background: rgba(234,179,8,0.08);
-    border: 1px solid rgba(234,179,8,0.2);
-    color: var(--yellow);
-  }
-
-  .label-shipped {
-    background: rgba(34,197,94,0.08);
-    border: 1px solid rgba(34,197,94,0.2);
-    color: var(--green);
-  }
-
-  .label-android {
-    background: rgba(34,197,94,0.08);
-    border: 1px solid rgba(34,197,94,0.2);
-    color: var(--green);
-  }
-
-  .label-android-progress {
-    background: rgba(249,115,22,0.08);
-    border: 1px solid rgba(249,115,22,0.2);
-    color: var(--orange);
-  }
-
-  .label-soon {
-    background: rgba(138,138,138,0.08);
-    border: 1px solid rgba(138,138,138,0.18);
-    color: var(--muted-2);
-  }
-
-  /* ── REVIEW CAROUSEL ── */
-  .review-carousel {
-    position: relative;
-    overflow: hidden;
-    cursor: grab;
-  }
-  .review-carousel.is-dragging {
-    cursor: grabbing;
-  }
-  .review-track {
-    display: flex;
-    transition: transform 0.55s cubic-bezier(.4,0,.2,1);
-  }
-  .review-track.no-transition {
-    transition: none;
-  }
-  .review-slide {
-    min-width: 100%;
-    flex-shrink: 0;
-  }
-  .review-dots {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 28px;
-  }
-  .review-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--border-2);
-    cursor: pointer;
-    transition: background 0.25s, transform 0.25s;
-  }
-  .review-dot.active {
-    background: var(--yellow);
-    transform: scale(1.35);
-  }
-
-  .label-dot {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: currentColor;
-    animation: pulse-dot 2s ease-in-out infinite;
-  }
-
-  .next-card-content h3 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 32px;
-    letter-spacing: -0.6px;
-    margin-bottom: 12px;
-    line-height: 1.05;
-    font-weight: 400;
-  }
-  .next-card-content h3 em {
-    font-style: italic;
-    color: rgba(255,255,255,0.35);
-  }
-
-  .next-card-content p {
-    font-size: 14px;
-    color: var(--muted-2);
-    line-height: 1.7;
-  }
-
-  .notif-mockup {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 16px;
-    position: relative;
-    overflow: hidden;
-    animation: notif-pop 6s ease-in-out infinite;
-  }
-  @keyframes notif-pop {
-    0%, 100% { transform: translateY(0); opacity: 1; }
-    45% { transform: translateY(0); opacity: 1; }
-    50% { transform: translateY(-6px); opacity: 0; }
-    50.001% { transform: translateY(16px); opacity: 0; }
-    55% { transform: translateY(0); opacity: 1; }
-  }
-
-  .notif-mockup::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(239,68,68,0.06) 0%, transparent 60%);
-    pointer-events: none;
-  }
-
-  .notif-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
-
-  .notif-app-icon {
-    width: 28px; height: 28px;
-    border-radius: 7px;
-    background: var(--black);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    flex-shrink: 0;
-    color: var(--red);
-  }
-
-  .notif-app-name {
-    font-size: 11px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.4);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    flex: 1;
-  }
-
-  .notif-time {
-    font-size: 11px;
-    color: rgba(255,255,255,0.2);
-    font-family: var(--mono);
-  }
-
-  .notif-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--white);
-    margin-bottom: 4px;
-    letter-spacing: -0.2px;
-  }
-
-  .notif-body {
-    font-size: 13px;
-    color: rgba(255,255,255,0.5);
-    line-height: 1.5;
-  }
-
-  .notif-urgency-bar {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--red);
-    animation: pulse-line 1.4s ease-in-out infinite;
-  }
-
-  .android-mockup {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .android-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 20px;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: var(--dark);
-    opacity: 0.55;
-    filter: grayscale(1);
-    width: fit-content;
-  }
-
-  .android-badge-text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .android-badge-text .small {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-
-  .android-badge-text .big {
-    font-size: 17px;
-    font-weight: 600;
-    color: var(--white);
-    letter-spacing: -0.3px;
-    line-height: 1;
-  }
-
-  .android-progress {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .android-progress-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--muted);
-    font-family: var(--mono);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-
-  .android-progress-label span:last-child {
-    color: var(--green);
-  }
-
-  .android-progress-bar {
-    height: 2px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .android-progress-fill {
-    height: 100%;
-    width: 35%;
-    background: var(--green);
-    border-radius: 2px;
-    animation: progress-breathe 3s ease-in-out infinite;
-  }
-  .android-progress-fill::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 30px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-    animation: shimmer 2.4s linear infinite;
-  }
-
-  @keyframes shimmer {
-    from { transform: translateX(-30px); }
-    to { transform: translateX(400px); }
-  }
-  @keyframes progress-breathe {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
-  }
-
-  /* ── CTA SECTION ── */
-  .cta-section {
-    position: relative;
-    z-index: 1;
-    padding: 60px 48px 140px;
-    max-width: 1180px;
-    margin: 0 auto;
-    text-align: center;
-  }
-
-  .cta-box {
-    border: 1px solid var(--border);
-    border-radius: 28px;
-    padding: 100px 48px;
-    background: var(--card);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .cta-box::before {
-    content: '';
-    position: absolute;
-    top: -1px; left: 50%;
-    transform: translateX(-50%);
-    width: 240px; height: 1px;
-    background: linear-gradient(to right, transparent, var(--green), transparent);
-  }
-
-  /* concentric pulse rings in cta */
-  .cta-box .rings {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    display: grid; place-items: center;
-    overflow: hidden;
-  }
-  .cta-box .rings span {
-    position: absolute;
-    width: 200px; height: 200px;
-    border-radius: 50%;
-    border: 1px solid rgba(34,197,94,0.18);
-    animation: ring-pulse 5s ease-out infinite;
-    opacity: 0;
-  }
-  .cta-box .rings span:nth-child(2) { animation-delay: 1.66s; }
-  .cta-box .rings span:nth-child(3) { animation-delay: 3.33s; }
-  @keyframes ring-pulse {
-    0% { transform: scale(0.5); opacity: 0; border-color: rgba(34,197,94,0.4); }
-    30% { opacity: 1; }
-    100% { transform: scale(5); opacity: 0; border-color: rgba(34,197,94,0); }
-  }
-
-  .cta-box .cta-inner { position: relative; z-index: 2; }
-
-  .cta-box h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(40px, 7vw, 88px);
-    letter-spacing: -3px;
-    margin-bottom: 24px;
-    line-height: 1;
-    font-weight: 400;
-  }
-
-  .cta-box h2 em {
-    font-style: italic;
-    color: rgba(255,255,255,0.35);
-    position: relative;
-    display: inline-block;
-  }
-  .cta-box h2 em svg {
-    position: absolute;
-    left: -4%;
-    bottom: -8%;
-    width: 108%;
-    height: 30%;
-    overflow: visible;
-  }
-  .cta-box h2 em path {
-    fill: none;
-    stroke: var(--green);
-    stroke-width: 2.5;
-    stroke-linecap: round;
-    stroke-dasharray: 400;
-    stroke-dashoffset: 400;
-  }
-  .cta-box.in-view h2 em path {
-    animation: underline-draw 1.4s 0.4s cubic-bezier(.65,.05,.36,1) forwards;
-  }
-  @keyframes underline-draw {
-    from { stroke-dashoffset: 400; }
-    to { stroke-dashoffset: 0; }
-  }
-
-  .cta-box p {
-    color: var(--muted-2);
-    font-size: 16px;
-    margin-bottom: 44px;
-    line-height: 1.7;
-    max-width: 560px;
-    margin-left: auto; margin-right: auto;
-  }
-
-  /* ── FOOTER ── */
-  footer {
-    position: relative;
-    z-index: 1;
-    border-top: 1px solid var(--border);
-  }
-  .footer-marquee {
-    overflow: hidden;
-    padding: 28px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .marquee {
-    display: flex;
-    gap: 48px;
-    width: max-content;
-    animation: marquee-scroll 60s linear infinite;
-    font-family: 'DM Serif Display', serif;
-    line-height: 1;
-    color: rgba(255,255,255,0.10);
-    letter-spacing: -1px;
-  }
-  @keyframes marquee-scroll {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
-  .footer-marquee .marquee {
-    font-size: clamp(36px, 7vw, 84px);
-    font-style: italic;
-    color: rgba(255,255,255,0.07);
-    animation-duration: 60s;
-  }
-  .footer-bottom {
-    padding: 32px 48px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: var(--muted);
-    font-size: 13px;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .footer-logo {
-    font-family: 'DM Serif Display', serif;
-    font-size: 20px;
-    color: var(--white);
-    font-style: italic;
-  }
-  .footer-bottom a { color: inherit; text-decoration: none; transition: color .2s; }
-  .footer-bottom a:hover { color: var(--white); }
-
-  /* ── SCROLL REVEAL ── */
-  .reveal {
-    opacity: 0;
-    transform: translateY(32px);
-    transition: opacity 0.9s cubic-bezier(.2,.7,.2,1), transform 0.9s cubic-bezier(.2,.7,.2,1);
-  }
-  .reveal.in-view { opacity: 1; transform: translateY(0); }
-  .reveal.delay-1 { transition-delay: 0.08s; }
-  .reveal.delay-2 { transition-delay: 0.16s; }
-  .reveal.delay-3 { transition-delay: 0.24s; }
-  .reveal.delay-4 { transition-delay: 0.32s; }
-  .reveal.delay-5 { transition-delay: 0.40s; }
-  .reveal.delay-6 { transition-delay: 0.48s; }
-
-  /* ── ANIMATIONS ── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 900px) {
-    .demo-stage { grid-template-columns: 1fr; }
-    .demo-left { border-right: none; border-bottom: 1px solid var(--border); }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .whats-next-grid { grid-template-columns: 1fr 1fr; }
-  }
-  @media (max-width: 768px) {
-    nav { padding: 16px 24px; }
-    .nav-time { display: none; }
-    /* hide secondary hero buttons on mobile — keep only App Store */
-    .hero-actions .ghost-btn:last-child { display: none; }
-    /* sections padding */
-    .section, .urgency-section, .zero-bs, .cta-section, .review-section,
-    .whats-next, .stats-band, .demo-section, .calculator-section,
-    .sandbox-teaser, .sandbox-teaser-inner { padding-left: 24px; padding-right: 24px; }
-    .sandbox-teaser { padding: 40px 24px; }
-    .sandbox-teaser-inner { padding: 32px 24px; grid-template-columns: 1fr; }
-    .sandbox-teaser-right { display: none; }
-    .whats-next-grid { grid-template-columns: 1fr; }
-    .urgency-cards { grid-template-columns: repeat(2, 1fr); }
-    .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
-    .cta-box { padding: 64px 28px; }
-    .review-card { padding: 36px 28px; }
-    .review-source { display: none; }
-    .section-head { margin-bottom: 40px; }
-    .demo-left { padding: 32px 28px; }
-    .demo-right { padding: 24px; }
-    /* features hero card stacks */
-    .fc-hero { grid-template-columns: 1fr; gap: 24px; padding: 28px 24px; }
-    .fc-hero-demo .fhd-card { padding: 12px 14px; }
-    .fhd-name { font-size: 13px; }
-    .fhd-time { font-size: 12px; }
-    /* HMS numbers scale down */
-    .fc-hms-val { font-size: 28px; }
-    /* live chip wraps cleanly */
-    .live-chip { flex-wrap: wrap; max-width: 280px; }
-    /* calc */
-    .calc-right { grid-template-columns: 1fr; }
-    .calc-container { padding: 28px 20px; }
-    /* board */
-    .board-wrap { padding: 36px 20px; }
-    .app-mock { padding: 22px; }
-    .app-mock-subject { font-size: 24px; }
-    .app-card { padding: 12px 14px; gap: 10px; }
-    .ac-icon { width: 34px; height: 34px; font-size: 16px; border-radius: 10px; }
-    .ac-title { font-size: 14px; }
-    .ac-due { font-size: 11px; }
-    .ac-time { font-size: 11px; }
-    .flip { min-width: 6ch; }
-  }
-  @media (max-width: 480px) {
-    .hero h1 { letter-spacing: -2px; }
-    .fc-hms-val { font-size: 22px; }
-    .fc-hms-sep { font-size: 20px; }
-    .urgency-cards { grid-template-columns: 1fr; }
-    .stats-grid { grid-template-columns: 1fr 1fr; }
-    .live-chip .live-time { font-size: 12px; }
-    /* swipe card text wraps */
-    .fc-swipe-name { font-size: 12px; }
-    .fc-swipe-sub { font-size: 10px; }
-  }
-  /* ── TWEAKS: MOOD / PALETTE / ATMOSPHERE ── */
-
-  /* MOOD — type voice + animation tempo */
-  body.mood-editorial .feature-num { display: none; }
-  body.mood-editorial .section-label::before { display: none; }
-  body.mood-editorial .hero h1 .line:first-child > span,
-  body.mood-editorial .hero h1 .line:last-child > span {
-    font-style: italic;
-    color: rgba(255,255,255,0.55);
-  }
-  body.mood-editorial .section-title em,
-  body.mood-editorial .next-card-content h3 em,
-  body.mood-editorial .cta-box h2 em,
-  body.mood-editorial .hero h1 em {
-    color: var(--white);
-  }
-  body.mood-editorial .ac-time,
-  body.mood-editorial .urgency-card-badge,
-  body.mood-editorial .demo-card .demo-card-time,
-  body.mood-editorial .chip,
-  body.mood-editorial .live-chip .live-time {
-    font-family: 'DM Serif Display', serif;
-    font-style: italic;
-    text-transform: none;
-    letter-spacing: -0.2px;
-    font-size: 15px;
-    font-weight: 400;
-  }
-
-  body.mood-engineered .section-title,
-  body.mood-engineered .cta-box h2,
-  body.mood-engineered .next-card-content h3,
-  body.mood-engineered .hero h1,
-  body.mood-engineered .app-mock-subject,
-  body.mood-engineered .demo-clock {
-    font-family: var(--mono);
-    font-weight: 500;
-    letter-spacing: -1.5px;
-  }
-  body.mood-engineered .section-title em,
-  body.mood-engineered .cta-box h2 em,
-  body.mood-engineered .next-card-content h3 em,
-  body.mood-engineered .hero h1 em,
-  body.mood-engineered .demo-clock .unit {
-    font-family: var(--mono);
-    font-style: normal;
-    color: rgba(255,255,255,0.35);
-  }
-  body.mood-engineered .review-quote {
-    font-family: var(--mono) !important;
-    font-style: normal;
-    font-size: clamp(18px, 2.2vw, 24px);
-    letter-spacing: -0.3px;
-    line-height: 1.5;
-  }
-  body.mood-engineered .review-quote em {
-    font-family: var(--mono);
-    font-style: normal;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    text-decoration-thickness: 1px;
-  }
-  body.mood-engineered .nav-logo { font-family: var(--mono); letter-spacing: -1px; }
-
-  /* PALETTE — urgency colour ramp */
-  body.palette-sunset {
-    --green: #facc15;
-    --yellow: #f59e0b;
-    --orange: #ea580c;
-    --red: #dc2626;
-  }
-  body.palette-mono {
-    --green: #d4d4d4;
-    --yellow: #a3a3a3;
-    --orange: #f97316;
-    --red: #ef4444;
-  }
-  /* Sunset re-tints alpha overlays so they don't read green */
-  body.palette-sunset .chip-green,
-  body.palette-sunset .label-android {
-    background: rgba(250,204,21,0.10);
-    border-color: rgba(250,204,21,0.28);
-  }
-  body.palette-sunset .hero-eyebrow-dot,
-  body.palette-sunset .board-lamp,
-  body.palette-sunset .board-clock .dot,
-  body.palette-sunset .page-eyebrow-dot {
-    box-shadow: 0 0 12px var(--green);
-  }
-  body.palette-sunset .hero-spotlight {
-    background: radial-gradient(circle 400px at var(--mx, 50%) var(--my, 50%), rgba(250,204,21,0.10), transparent 60%);
-  }
-  body.palette-sunset .feature-card::before {
-    background: linear-gradient(90deg, transparent, var(--green), transparent);
-  }
-  body.palette-sunset .zero-check {
-    background: rgba(250,204,21,0.10);
-    border-color: rgba(250,204,21,0.30);
-    color: var(--green);
-  }
-  body.palette-sunset .cta-box::before {
-    background: linear-gradient(to right, transparent, var(--green), transparent);
-  }
-  body.palette-sunset .cta-box .rings span {
-    border-color: rgba(250,204,21,0.20);
-  }
-  body.palette-sunset .cta-box h2 em path { stroke: var(--green); }
-
-  /* Mono palette flattens the cool ramp */
-  body.palette-mono .chip-green {
-    background: rgba(212,212,212,0.06);
-    border-color: rgba(212,212,212,0.20);
-  }
-  body.palette-mono .hero-eyebrow-dot,
-  body.palette-mono .page-eyebrow-dot { box-shadow: 0 0 10px rgba(255,255,255,0.4); }
-  body.palette-mono .board-lamp,
-  body.palette-mono .board-clock .dot { box-shadow: 0 0 10px rgba(255,255,255,0.4); }
-  body.palette-mono .hero-spotlight {
-    background: radial-gradient(circle 400px at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.05), transparent 60%);
-  }
-  body.palette-mono .feature-card::before {
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  }
-  body.palette-mono .zero-check {
-    background: rgba(255,255,255,0.04);
-    border-color: rgba(255,255,255,0.18);
-    color: var(--white);
-  }
-  body.palette-mono .cta-box::before {
-    background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
-  }
-  body.palette-mono .cta-box .rings span { border-color: rgba(255,255,255,0.10); }
-  body.palette-mono .cta-box h2 em path { stroke: var(--white); }
-  body.palette-mono .scroll-progress {
-    background: linear-gradient(90deg, var(--green), var(--yellow) 40%, var(--orange) 75%, var(--red));
-  }
-
-  /* ATMOSPHERE — noise / spotlight / grid */
-  body.atm-pure::before { opacity: 0; }
-  body.atm-pure .hero-spotlight,
-  body.atm-pure .hero-grid { display: none; }
-  body.atm-pure .app-mock::before { display: none; }
-
-  body.atm-aurora::before { opacity: 0.55; }
-  body.atm-aurora .hero-spotlight {
-    background: radial-gradient(circle 600px at var(--mx, 50%) var(--my, 50%), rgba(34,197,94,0.18), transparent 55%);
-  }
-  body.atm-aurora .hero::after {
-    content: '';
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse at 15% 80%, rgba(34,197,94,0.12), transparent 50%),
-      radial-gradient(ellipse at 85% 20%, rgba(239,68,68,0.08), transparent 50%);
-    pointer-events: none;
-    animation: aurora-drift 18s ease-in-out infinite;
-    z-index: 0;
-  }
-  body.atm-aurora.palette-sunset .hero::after {
-    background:
-      radial-gradient(ellipse at 15% 80%, rgba(250,204,21,0.12), transparent 50%),
-      radial-gradient(ellipse at 85% 20%, rgba(220,38,38,0.10), transparent 50%);
-  }
-  body.atm-aurora.palette-mono .hero::after {
-    background:
-      radial-gradient(ellipse at 15% 80%, rgba(255,255,255,0.05), transparent 50%),
-      radial-gradient(ellipse at 85% 20%, rgba(255,255,255,0.03), transparent 50%);
-  }
-  @keyframes aurora-drift {
-    0%, 100% { transform: translate(0,0) scale(1); opacity: 1; }
-    33% { transform: translate(40px,-30px) scale(1.05); opacity: 0.75; }
-    66% { transform: translate(-30px,20px) scale(0.95); opacity: 1; }
-  }
-
-  /* ── TWEAKS PANEL ── */
-  .tweaks-panel {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 300;
-    width: 320px;
-    background: rgba(16,16,16,0.9);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid var(--border-2);
-    border-radius: 18px;
-    color: var(--white);
-    font-family: 'Satoshi', sans-serif;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.55);
-    transform: translateY(20px) scale(0.98);
-    opacity: 0;
-    transition: opacity .25s ease, transform .25s cubic-bezier(.2,.7,.2,1);
-    pointer-events: none;
-  }
-  .tweaks-panel.open {
-    opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
-  }
-  .tp-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 18px;
-    border-bottom: 1px solid var(--border);
-  }
-  .tp-title {
-    font-family: var(--mono);
-    font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
-    color: var(--white);
-    display: inline-flex; align-items: center; gap: 8px;
-  }
-  .tp-title-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 8px var(--green);
-    animation: pulse-dot 2s ease-in-out infinite;
-  }
-  .tp-close {
-    background: none; border: none; color: var(--muted-2);
-    cursor: pointer; padding: 4px 6px;
-    font-size: 14px;
-    transition: color .2s;
-    line-height: 1;
-  }
-  .tp-close:hover { color: var(--white); }
-  .tp-body { padding: 18px; display: flex; flex-direction: column; gap: 20px; }
-  .tp-label {
-    font-family: var(--mono);
-    font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase;
-    color: var(--muted-2);
-    margin-bottom: 8px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .tp-label .tp-value {
-    color: var(--white);
-    letter-spacing: 1.2px;
-  }
-  .tp-radio {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 3px;
-    gap: 2px;
-  }
-  .tp-radio button {
-    background: none; border: none; color: var(--muted-2);
-    font-family: 'Satoshi', sans-serif;
-    font-size: 12px; font-weight: 500;
-    padding: 8px 4px;
-    border-radius: 7px;
-    cursor: pointer;
-    transition: background .2s, color .2s;
-    letter-spacing: -0.1px;
-  }
-  .tp-radio button:hover { color: var(--white); }
-  .tp-radio button.active {
-    background: var(--card-2);
-    color: var(--white);
-    box-shadow: inset 0 0 0 1px var(--border-2);
-  }
-  .tp-hint {
-    font-size: 11px; color: var(--muted);
-    margin-top: 8px; line-height: 1.5;
-  }
-  @media (max-width: 600px) {
-    .tweaks-panel { left: 16px; right: 16px; bottom: 16px; width: auto; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
-  }
-</style>
-<style>
-  /* ─── SANDBOX TEASER ─── */
-  .sandbox-teaser {
-    position: relative;
-    z-index: 1;
-    padding: 60px 48px;
-    max-width: 1180px;
-    margin: 0 auto;
-  }
-  .sandbox-teaser-inner {
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    background: var(--card);
-    padding: 56px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 48px;
-    align-items: center;
-  }
-  .sandbox-teaser-right { display: flex; justify-content: center; }
-  .sandbox-preview-card {
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 28px;
-    width: 100%;
-    max-width: 320px;
-  }
-  .spc-step {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-  .spc-input {
-    font-size: 17px;
-    font-weight: 500;
-    color: var(--white);
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border-2);
-    border-radius: 10px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 2px;
-  }
-  .spc-cursor {
-    display: inline-block;
-    width: 2px;
-    height: 1em;
-    background: var(--green);
-    border-radius: 1px;
-    animation: spc-blink 1s steps(1) infinite;
-    vertical-align: -1px;
-    margin-left: 2px;
-  }
-  @keyframes spc-blink { 0%,49%{opacity:1;} 50%,100%{opacity:0;} }
-  .spc-colors { display: flex; gap: 8px; }
-  .spc-swatch {
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    border: 2.5px solid transparent;
-    flex-shrink: 0;
-  }
-  .spc-card {
-    position: relative;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(94,92,230,0.25);
-    border-left: 4px solid #5E5CE6;
-    border-radius: 12px;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    overflow: hidden;
-  }
-  .spc-card-icon {
-    width: 38px; height: 38px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  @media (max-width: 900px) {
-    .sandbox-teaser-inner { grid-template-columns: 1fr; }
-    .sandbox-teaser-right { display: none; }
-  }
-  @media (max-width: 768px) {
-    .sandbox-teaser { padding-left: 24px; padding-right: 24px; }
-  }
-
-  .calculator-section {
-    position: relative;
-    z-index: 1;
-    padding: 60px 48px 60px;
-    max-width: 1180px;
-    margin: 0 auto;
-  }
-  .calc-container {
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    background: var(--card);
-    padding: 48px;
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-  }
-  .calc-left {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-  .calc-slider-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .calc-slider-header {
-    display: flex;
-    justify-content: space-between;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--muted-2);
-  }
-  .calc-slider-header span strong { color: var(--white); }
-  .calc-slider {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--border-2);
-    outline: none;
-    cursor: pointer;
-  }
-  .calc-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--green);
-    border: 3px solid var(--card);
-    box-shadow: 0 0 10px rgba(34,197,94,0.4);
-    transition: transform 0.15s;
-  }
-  .calc-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
-  .calc-right {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-  .calc-card {
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 32px 28px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 20px;
-    transition: border-color 0.3s, transform 0.3s;
-  }
-  .calc-card:hover { border-color: var(--border-2); transform: translateY(-2px); }
-  .calc-card.is-deadline {
-    border-color: rgba(34,197,94,0.2);
-    background: linear-gradient(180deg, var(--dark) 0%, rgba(34,197,94,0.02) 100%);
-  }
-  .calc-card.is-deadline:hover { border-color: rgba(34,197,94,0.5); }
-  .calc-card-meta {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 1px;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  .calc-metric {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(36px, 5vw, 52px);
-    line-height: 1.05;
-    color: var(--white);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -1px;
-    transition: color 0.4s;
-  }
-  .calc-card.is-deadline .calc-metric { color: var(--green); }
-  .calc-metric-sub {
-    font-size: 13px;
-    color: var(--muted-2);
-    line-height: 1.6;
-  }
-  .calc-step-list {
-    margin-top: 10px;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted-2);
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-  .calc-step-list li {
-    position: relative;
-    padding-left: 16px;
-  }
-  .calc-step-list li::before {
-    content: '→';
-    position: absolute;
-    left: 0;
-    color: var(--red);
-  }
-  .calc-card.is-deadline .calc-step-list li::before { color: var(--green); }
-  @media (max-width: 768px) {
-    .calc-right { grid-template-columns: 1fr; }
-    .calc-container { padding: 28px 20px; }
-    .calculator-section { padding-left: 24px; padding-right: 24px; }
-  }
-
-
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Deadline — assignment countdowns for iPhone</title>
+<meta name="description" content="Deadline is a free iPhone app for uni assignments. Every assignment gets a live countdown that turns from green to red as it gets close. No account, no ads.">
+<meta name="theme-color" content="#0A0A0B">
+<meta name="color-scheme" content="dark">
+<meta name="apple-itunes-app" content="app-id=6767482309">
+<link rel="canonical" href="https://deadline-website-tau.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Deadline — know what's due before it's urgent">
+<meta property="og:description" content="Every assignment gets a live countdown that turns from green to red as it gets close. Free on iPhone. No account.">
+<meta property="og:url" content="https://deadline-website-tau.vercel.app/">
+<meta property="og:image" content="https://deadline-website-tau.vercel.app/assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="assets/img/favicon-64.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/Satoshi-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/site.css">
+<script>document.documentElement.classList.add('js')</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"MobileApplication","name":"Deadline.","operatingSystem":"iOS 16.4 or later","applicationCategory":"ProductivityApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"downloadUrl":"https://apps.apple.com/app/deadline/id6767482309","description":"An assignment tracker for iPhone. Every assignment gets a live countdown and an urgency colour that changes as the due date gets close."}
+</script>
 <script defer src="https://cloud.umami.is/script.js" data-website-id="f7c7fc25-7401-4f5f-90be-51c1d1f1da90"></script>
+<script defer src="assets/js/site.js"></script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 
-<div class="scroll-progress" id="scrollProgress"></div>
+<!-- The page is a week running out: this rail fills green → red as you scroll. -->
+<div class="timerail" aria-hidden="true"><span></span></div>
 
-<!-- NAV -->
-<nav>
-  <a href="/" class="nav-logo">deadline<span>.</span></a>
-  <div class="nav-time" id="navTime">
-    <span class="dot"></span>
-    <span id="navTimeText">SYNC · 00:00:00</span>
+<header class="nav" id="top">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top" aria-label="Deadline, back to top">
+      <img src="assets/img/favicon-64.png" alt="" width="28" height="28">
+      <span>Deadline<b>.</b></span>
+    </a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#countdown">Countdown</a>
+      <a href="#how">How it works</a>
+      <a href="#reminders">Reminders</a>
+      <a href="#widgets">Widgets</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn btn-accent btn-sm" href="https://apps.apple.com/app/deadline/id6767482309" data-umami-event="app-store" data-umami-event-where="nav">Get it free</a>
   </div>
-  <a href="https://apps.apple.com/us/app/deadline/id6767482309" target="_blank" class="nav-cta">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-    Download Free
-  </a>
-</nav>
+</header>
 
-<!-- HERO -->
+<main id="main">
+
+<!-- ═════════════ HERO ═════════════ -->
 <section class="hero">
-  <div class="hero-grid"></div>
-  <div class="hero-spotlight" id="heroSpot"></div>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Assignment countdowns · for iPhone</p>
 
-  <div class="hero-inner">
-    <div class="hero-eyebrow">
-      <div class="hero-eyebrow-dot"></div>
-      <span>Live on the App Store</span>
-      <span class="sep">·</span>
-      <span class="count">Deadline 1.6.0</span>
-    </div>
-
-    <h1>
-      <span class="line"><span>Never miss</span></span>
-      <span class="line"><span><em class="scramble" data-final="a deadline">a deadline</em></span></span>
-      <span class="line"><span>again.</span></span>
-    </h1>
-
-    <p class="hero-sub">
-      Deadline 1.6.0 adds Home Screen and Lock Screen widgets, Overview, and behind-the-scenes reliability improvements. The simplest way to track assignments and due dates — no spreadsheets, no complexity.
-    </p>
-
-    <div class="hero-actions">
-      <a href="https://apps.apple.com/us/app/deadline/id6767482309" target="_blank" class="appstore-badge">
-        <div class="appstore-badge-left">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="#000"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-        </div>
-        <div class="appstore-badge-text">
-          <span class="small">Download on the</span>
-          <span class="big">App Store</span>
-        </div>
-      </a>
-      <a href="#features" class="ghost-btn">
-        See how it works
-        <span class="arrow">↗</span>
-      </a>
-    </div>
-
-    <div class="live-chip" aria-hidden="true">
-      <div class="live-icon">⚖️</div>
-      <div>
-        <div class="live-label">Due in</div>
-        <div class="live-title">Law Case Study</div>
+      <div class="morph" id="morph" role="img" aria-label="“due friday”, turning into the exact time left until Friday 11:59 pm">
+        <span class="morph-vague" aria-hidden="true">due friday<i class="caret"></i></span>
+        <span class="morph-exact" aria-hidden="true"><span class="morph-num" id="heroCount">—</span></span>
       </div>
-      <div class="live-time"><span id="liveTimer">04H 23M 11S</span></div>
-      <div class="live-pulse"></div>
-    </div>
-  </div>
+      <p class="morph-note" aria-hidden="true"><span class="dot" id="heroDot"></span><span id="heroNote">until Friday, 11:59 pm — your time</span></p>
 
-  <div class="scroll-hint">
-    <span>scroll</span>
-    <div class="scroll-line"></div>
+      <h1>Know what’s due before it’s&nbsp;urgent.</h1>
+      <p class="lede">Deadline is an iPhone app for uni assignments. Each one gets a live countdown and a colour that goes from green to red as it closes in — so the one that needs you is always obvious.</p>
+
+      <div class="cta-row">
+        <a class="badge" href="https://apps.apple.com/app/deadline/id6767482309" data-umami-event="app-store" data-umami-event-where="hero">
+          <svg aria-hidden="true"><use href="assets/img/icons.svg#i-logo-apple"/></svg>
+          <span><small>Download on the</small>App Store</span>
+        </a>
+        <a class="textlink" href="#how">See it working <svg aria-hidden="true"><use href="assets/img/icons.svg#i-arrow-down"/></svg></a>
+      </div>
+      <ul class="facts" aria-label="Quick facts">
+        <li>Free</li><li>No account</li><li>No ads</li><li>iOS 16.4+</li>
+      </ul>
+    </div>
+
+    <div class="hero-visual">
+      <div class="glow glow-red" aria-hidden="true"></div>
+      <figure class="phone phone-hero">
+        <img src="assets/img/screens/subject-psy101.webp" width="924" height="2000" fetchpriority="high"
+             alt="Deadline showing the PSY101 subject: four assignments, each with a countdown — Research Essay 23H 27M 2S in red, Case Study Report 1D 5H in orange, Group Presentation 4D 10H in yellow, Exam 45D LEFT in green.">
+      </figure>
+    </div>
   </div>
 </section>
 
-<!-- DEPARTURES BOARD -->
-<section class="board-wrap" aria-label="Sample deadlines">
-  <div class="board-inner">
-    <div class="board-header">
-      <div class="board-title">
-        <span class="board-lamp"></span>
-        Now Boarding — Sample Deadlines
-      </div>
-      <div class="board-clock">
-        <span class="dot"></span>
-        <span id="boardClock">00:00:00</span>
-        <span>· LIVE</span>
-      </div>
+<!-- ═════════════ PROBLEM ═════════════ -->
+<section class="problem" aria-labelledby="problem-h">
+  <div class="wrap">
+    <p class="eyebrow">Where your due dates live right now</p>
+    <h2 id="problem-h" class="sr-only">Where your due dates actually live</h2>
+    <ol class="hideouts">
+      <li class="reveal"><span class="src"><i style="--c:var(--calm)"></i>p.14 · unit outline (final).pdf</span>page 14 of a PDF you opened&nbsp;once.</li>
+      <li class="reveal"><span class="src"><i style="--c:var(--soon)"></i>group chat</span>the group chat, three days&nbsp;late.</li>
+      <li class="reveal"><span class="src"><i style="--c:var(--move)"></i>calendar · last edited week 1</span>a calendar you updated in week&nbsp;1.</li>
+      <li class="reveal"><span class="src"><i style="--c:var(--now)"></i>your head</span>your head, at&nbsp;2am.</li>
+    </ol>
+    <div class="pivot reveal">
+      <p class="pivot-big">You didn’t forget the date.<br><span>You forgot the time.</span></p>
+      <p class="pivot-small">Thursday 9:00&nbsp;am and Thursday 11:59&nbsp;pm are the same date and a very different night. Deadline keeps both, and counts down to the minute it’s actually&nbsp;due.</p>
     </div>
-    <div class="app-mock">
-      <div class="app-mock-inner">
-        <div class="app-mock-head">
-          <h3 class="app-mock-subject">Microeconomics</h3>
-          <div class="app-mock-meta">
-            <span class="chip chip-green">3 Pending</span>
-            <span class="chip chip-orange"><span class="chip-icon">⏱</span> Next Due In: <span id="nextDue">20H 40M</span></span>
+  </div>
+</section>
+
+<!-- ═════════════ COUNTDOWN (interactive) ═════════════ -->
+<section class="mechanic" id="countdown" aria-labelledby="mech-h">
+  <div class="wrap mech-grid">
+    <div class="mech-copy">
+      <p class="eyebrow">The countdown</p>
+      <h2 id="mech-h">Colour tells you when to&nbsp;act.</h2>
+      <p class="lede">Add an assignment and the countdown starts. You never set the colour — it changes on its own as the due date gets&nbsp;close.</p>
+
+      <ol class="ladder" id="ladder" aria-label="Urgency colours">
+        <li data-band="calm"><i></i><b>Plenty of time</b><span>5+ days</span></li>
+        <li data-band="soon"><i></i><b>Coming up</b><span>2–4 days</span></li>
+        <li data-band="move"><i></i><b>Get moving</b><span>24–48 hrs</span></li>
+        <li data-band="now"><i></i><b>Due soon</b><span>under 24 hrs · ticking</span></li>
+      </ol>
+      <p class="fine">Under 24 hours the card ticks by the second and its bar pulses. Switch on <em>Extended Live Countdown</em> in Settings and every card&nbsp;ticks.</p>
+    </div>
+
+    <div class="mech-demo">
+      <div class="demo-screen" id="demo" style="--sc:#FF3B30">
+        <div class="demo-head">
+          <span class="demo-sub">PSY101</span>
+          <div class="pills">
+            <span class="pill" style="--pc:var(--sc)" id="pendPill">1 pending</span>
+            <span class="pill urg" id="duePill"><svg aria-hidden="true"><use href="assets/img/icons.svg#i-time"/></svg><span id="duePillText">Next due in: —</span></span>
           </div>
         </div>
-        <div class="app-mock-section-head">
-          <div class="app-mock-section-label">Assignments</div>
-          <div class="app-mock-plus" aria-hidden="true">+</div>
+
+        <div class="tc" id="demoCard" style="--sc:#FF3B30">
+          <div class="tc-in">
+            <button class="tc-box" type="button" id="demoCheck" aria-label="Mark as complete"><svg aria-hidden="true"><use href="assets/img/icons.svg#i-checkmark"/></svg></button>
+            <div class="tc-info"><div class="tc-t" id="demoTitle">Research Essay</div><div class="tc-d" id="demoDue">Due: —</div></div>
+            <div class="tc-u" id="demoCount" role="timer" aria-live="off">—</div>
+            <div class="tc-bar"></div>
+          </div>
         </div>
-        <div class="app-cards">
-          <article class="app-card" data-color="red" data-seconds="74408" data-fmt="hms" data-live="1">
-            <div class="ac-icon">📝</div>
-            <div class="ac-body">
-              <h4 class="ac-title">Case Study</h4>
-              <div class="ac-due">Due: 13 May 2026 @ 11:59pm</div>
-            </div>
-            <div class="ac-time"><span class="flip"><span class="flip-cur">20H 40M 8S</span></span></div>
-            <div class="ac-line"></div>
-          </article>
-          <article class="app-card" data-color="yellow" data-seconds="331200" data-fmt="dh">
-            <div class="ac-icon">📊</div>
-            <div class="ac-body">
-              <h4 class="ac-title">Supply and Demand Report</h4>
-              <div class="ac-due">Due: 16 May 2026 @ 11:59pm</div>
-            </div>
-            <div class="ac-time"><span class="flip"><span class="flip-cur">3D 20H</span></span></div>
-            <div class="ac-line"></div>
-          </article>
-          <article class="app-card" data-color="green" data-seconds="590400" data-fmt="dleft">
-            <div class="ac-icon">📄</div>
-            <div class="ac-body">
-              <h4 class="ac-title">Market Structure Essay</h4>
-              <div class="ac-due">Due: 19 May 2026 @ 11:59pm</div>
-            </div>
-            <div class="ac-time"><span class="flip"><span class="flip-cur">6D LEFT</span></span></div>
-            <div class="ac-line"></div>
-          </article>
+
+        <div class="scrub">
+          <label for="scrub" class="scrub-label"><span>Skip ahead through the week</span><span id="scrubOut" class="mono">7 days out</span></label>
+          <input type="range" id="scrub" min="0" max="608400" step="60" value="0">
+          <div class="scrub-ticks" aria-hidden="true"><span>7 days out</span><span>due</span></div>
         </div>
+
+        <label class="switch">
+          <input type="checkbox" id="extended">
+          <span class="switch-ui" aria-hidden="true"></span>
+          <span><b>Extended Live Countdown</b><small>Tick all assignments in real time</small></span>
+        </label>
+
+        <details class="own" id="own">
+          <summary>Try it with your own deadline</summary>
+          <div class="own-body">
+            <label>Assignment<input type="text" id="ownTitle" placeholder="e.g. Read Chapter 4" maxlength="40" autocomplete="off"></label>
+            <label>Due<input type="datetime-local" id="ownWhen"></label>
+            <button type="button" class="chip-btn" id="ownEod"><svg aria-hidden="true"><use href="assets/img/icons.svg#i-moon"/></svg>End of Day (11:59 PM)</button>
+          </div>
+        </details>
+      </div>
+      <p class="demo-caption">Built from the app’s own card, thresholds and timing. Tap the circle when it’s&nbsp;done.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ ONE SCREEN ═════════════ -->
+<section class="screens" aria-labelledby="screens-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">The real app</p>
+      <h2 id="screens-h">Every subject. Every deadline. One&nbsp;screen.</h2>
+    </div>
+    <div class="screens-grid">
+      <article class="screen-item reveal">
+        <figure class="phone"><img src="assets/img/screens/dashboard.webp" width="924" height="2000" loading="lazy" decoding="async"
+          alt="The Deadline dashboard: Total Tasks 17 across 6 active subjects, a Next Deadline card for Research Essay at 23H 24M, and six colour-coded subjects — PSY101, BIO204, ENG312, MAT101, SOC215, PHY103."></figure>
+        <h3>Your units, each in its own colour.</h3>
+        <p>The dashboard keeps a running total and pins whatever’s due next to the top. Tap a unit to see its&nbsp;work.</p>
+      </article>
+      <article class="screen-item reveal">
+        <figure class="phone"><img src="assets/img/screens/overview.webp" width="924" height="2000" loading="lazy" decoding="async"
+          alt="The Overview screen: every pending assignment grouped by subject and sorted by urgency, starting with PSY101’s Research Essay at 23H 24M."></figure>
+        <h3>Everything pending, in the order it’s due.</h3>
+        <p>Overview puts every unit’s work in one list, closest first. Anything overdue goes straight to the top. Rude, but&nbsp;correct.</p>
+      </article>
+      <article class="screen-item reveal">
+        <figure class="phone"><img src="assets/img/screens/subject-psy101.webp" width="924" height="2000" loading="lazy" decoding="async"
+          alt="The PSY101 subject screen tinted red, with pending count, next-due pill and four assignment cards."></figure>
+        <h3>Open a unit and the whole screen takes its colour.</h3>
+        <p>Header, buttons, the lot. You know which subject you’re in before you read a&nbsp;word.</p>
+      </article>
+    </div>
+
+    <!-- Subject builder: rebuilt dashboard card with the app's 10 colours + 15 icons -->
+    <div class="builder reveal" aria-labelledby="builder-h">
+      <div class="builder-copy">
+        <h3 id="builder-h">Ten colours. Fifteen icons. Make it&nbsp;yours.</h3>
+        <p>Pick a colour and an icon for each unit — the card recolours as you&nbsp;choose.</p>
+      </div>
+      <div class="builder-ui">
+        <div class="sc" id="scCard" style="--sc:#FF3B30">
+          <div class="sc-info"><div class="sc-name" id="scName">PSY101</div><div class="sc-det">4 Tasks remaining</div></div>
+          <span class="sc-icon"><svg aria-hidden="true"><use id="scIconUse" href="assets/img/icons.svg#i-book"/></svg></span>
+        </div>
+        <div class="swatches" role="group" aria-label="Subject colour" id="swatches"></div>
+        <div class="iconpick" role="group" aria-label="Subject icon" id="iconpick"></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FEATURES -->
-<section class="section" id="features">
-  <div class="section-head reveal">
+<!-- ═════════════ HOW IT WORKS (real recordings) ═════════════ -->
+<section class="how" id="how" aria-labelledby="how-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">How it works · real screen recordings</p>
+      <h2 id="how-h">Seconds to add. Then it runs&nbsp;itself.</h2>
+    </div>
+    <ol class="steps">
+      <li class="step reveal">
+        <div class="phone phone-rec"><video muted playsinline loop preload="none" data-poster="assets/video/rec-new-subject.jpg" data-src="assets/video/rec-new-subject.mp4" width="600" height="1236" aria-label="Screen recording: creating a subject called English and choosing the colour red."></video></div>
+        <span class="step-n">01</span>
+        <h3>Add your units.</h3>
+        <p>Name it, pick a colour and an icon. It lands on your&nbsp;dashboard.</p>
+      </li>
+      <li class="step reveal">
+        <div class="phone phone-rec"><video muted playsinline loop preload="none" data-poster="assets/video/rec-add-assignment.jpg" data-src="assets/video/rec-add-assignment.mp4" width="600" height="1234" aria-label="Screen recording: adding Read Chapter 4, choosing a date, tapping End of Day, and the countdown starting at 6D 6H 6M 41S."></video></div>
+        <span class="step-n">02</span>
+        <h3>Add what’s due.</h3>
+        <p>Title, date, time. Due at midnight? <em>End of Day (11:59&nbsp;PM)</em> is one&nbsp;tap.</p>
+      </li>
+      <li class="step reveal">
+        <div class="phone phone-rec"><video muted playsinline loop preload="none" data-poster="assets/video/rec-complete-undo.jpg" data-src="assets/video/rec-complete-undo.mp4" width="600" height="1234" aria-label="Screen recording: ticking off Read Chapter 4, undoing it, then swiping left to delete it."></video></div>
+        <span class="step-n">03</span>
+        <h3>Tick it off.</h3>
+        <p>Done ones drop to Completed. Swipe left to delete — with an undo, in&nbsp;case.</p>
+      </li>
+    </ol>
+
+    <div class="extras">
+      <figure class="extra reveal">
+        <img src="assets/img/stills/date-picker.jpg" width="610" height="760" loading="lazy" decoding="async" alt="The Deadline date picker: an End of Day (11:59 PM) button, a row of days, an hour and minute wheel set to 11:59 PM, and a Confirm Deadline button.">
+        <figcaption><b>A date picker that gets it.</b> Days in a row, time on a wheel, and the 11:59&nbsp;pm button right at the&nbsp;top.</figcaption>
+      </figure>
+      <figure class="extra reveal">
+        <img src="assets/img/screens/recurring.webp" class="crop-recurring" width="924" height="2000" loading="lazy" decoding="async" alt="The New Recurring Assignment sheet: a Quiz set for every Wednesday at 11:59 PM, 11 dates between 22 July and 30 September.">
+        <figcaption><b>Weekly quiz? Add it once.</b> Pick the semester range and Deadline lays out every date for you to&nbsp;review.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ REMINDERS ═════════════ -->
+<section class="reminders" id="reminders" aria-labelledby="rem-h">
+  <div class="wrap rem-grid">
+    <div class="rem-copy">
+      <p class="eyebrow">Reminders</p>
+      <h2 id="rem-h">It tells you five&nbsp;times.</h2>
+      <p class="lede">Every assignment gets five reminders — a week out, five days, two days, the day before and the final hour. The last two are marked Time&nbsp;Sensitive.</p>
+    </div>
+
+    <ol class="notifs" id="notifs" aria-label="The five reminders for one assignment">
+      <li class="nt"><span class="nt-when">7 days before</span><div class="nt-card"><img src="assets/img/favicon-64.png" alt="" width="38" height="38"><div><p class="nt-top"><b>PSY101</b><span>now</span></p><p>📚 Research Essay is due in 7 days. Get ahead of it.</p></div></div></li>
+      <li class="nt"><span class="nt-when">5 days before</span><div class="nt-card"><img src="assets/img/favicon-64.png" alt="" width="38" height="38"><div><p class="nt-top"><b>PSY101</b><span>now</span></p><p>📅 Research Essay is due in 5 days. Plan your time.</p></div></div></li>
+      <li class="nt"><span class="nt-when">2 days before</span><div class="nt-card"><img src="assets/img/favicon-64.png" alt="" width="38" height="38"><div><p class="nt-top"><b>PSY101</b><span>now</span></p><p>⚠️ Research Essay is due in 2 days. Time to start.</p></div></div></li>
+      <li class="nt nt-hot"><span class="nt-when">24 hours before</span><div class="nt-card"><img src="assets/img/favicon-64.png" alt="" width="38" height="38"><div><p class="nt-top"><b>PSY101</b><span>Time Sensitive</span></p><p>🔴 Research Essay is due TOMORROW. Don’t leave it.</p></div></div></li>
+      <li class="nt nt-hot"><span class="nt-when">1 hour before</span><div class="nt-card"><img src="assets/img/favicon-64.png" alt="" width="38" height="38"><div><p class="nt-top"><b>PSY101</b><span>Time Sensitive</span></p><p>🚨 FINAL HOUR. Research Essay is due in 1 hour!</p></div></div></li>
+    </ol>
+
+    <div class="daily reveal">
+      <p class="daily-kicker"><svg aria-hidden="true"><use href="assets/img/icons.svg#i-notifications-outline"/></svg>Plus an optional daily reminder, at a time you&nbsp;pick</p>
+      <p class="daily-line">Don’t be that person submitting at 11:58&nbsp;PM.</p>
+      <p class="daily-note">Rude. Accurate. It’s one of twelve lines Deadline picks from, like <span class="daily-alt" id="dailyAlt">“Semester’s moving. Are you?”</span></p>
+      <button class="film" type="button" id="filmBtn" aria-haspopup="dialog">
+        <span class="film-thumb"><img src="assets/video/ad-1158-confession.jpg" alt="" width="720" height="1280" loading="lazy"><svg aria-hidden="true"><use href="assets/img/icons.svg#i-play"/></svg></span>
+        <span class="film-t"><b>The 11:58 confession</b><small>A short film · 0:18 · sound on</small></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ WIDGETS ═════════════ -->
+<section class="widgets" id="widgets" aria-labelledby="wid-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Widgets</p>
+      <h2 id="wid-h">Due next, without opening&nbsp;anything.</h2>
+      <p class="lede">Home Screen widgets in two sizes, and three for the Lock Screen. What’s next is there every time you pick up your&nbsp;phone.</p>
+    </div>
+    <div class="wid-grid">
+      <div class="wid-home reveal">
+        <p class="wid-label">Home Screen</p>
+        <div class="wid-row">
+          <div class="w w-small" id="wSmall" aria-label="Small widget"></div>
+          <div class="w w-medium" id="wMedium" aria-label="Medium widget"></div>
+        </div>
+      </div>
+      <div class="wid-lock reveal">
+        <p class="wid-label">Lock Screen</p>
+        <div class="lock">
+          <p class="lock-inline" id="wInline">—</p>
+          <p class="lock-time" id="lockTime">9:41</p>
+          <div class="lock-row">
+            <div class="w-circ" id="wCirc" aria-label="Circular Lock Screen widget"></div>
+            <div class="w-rect" id="wRect" aria-label="Rectangular Lock Screen widget"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="fine center">Widget previews use sample assignments and the widgets’ own layout and wording. Live times, counted from&nbsp;now.</p>
+  </div>
+</section>
+
+<!-- ═════════════ PRIVATE ═════════════ -->
+<section class="private" aria-labelledby="priv-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Private by default</p>
+      <h2 id="priv-h">Nothing to sign up&nbsp;for.</h2>
+    </div>
+    <ul class="truths">
+      <li class="reveal"><svg aria-hidden="true"><use href="assets/img/icons.svg#i-person-outline"/></svg><b>No account.</b><span>No email, no login. Open it and start.</span></li>
+      <li class="reveal"><svg aria-hidden="true"><use href="assets/img/icons.svg#i-phone-portrait-outline"/></svg><b>It stays on your phone.</b><span>Subjects, assignments and due dates are stored on your device. There’s no Deadline server to keep them.</span></li>
+      <li class="reveal"><svg aria-hidden="true"><use href="assets/img/icons.svg#i-cloud-offline-outline"/></svg><b>Works offline.</b><span>Lecture hall with no signal? Makes no difference.</span></li>
+      <li class="reveal"><svg aria-hidden="true"><use href="assets/img/icons.svg#i-close"/></svg><b>No ads. No subscription.</b><span>No in-app purchases either. It’s just free.</span></li>
+    </ul>
+    <p class="fine center">Optional, anonymous usage counts — like “an assignment was added” — help improve the app, and you can turn them off in Settings. <a href="privacy">Privacy policy</a></p>
+  </div>
+</section>
+
+<!-- ═════════════ REVIEWS ═════════════ -->
+<section class="reviews" aria-labelledby="rev-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">From the App Store</p>
+      <h2 id="rev-h">What people wrote.</h2>
+    </div>
+    <div class="quotes">
+      <figure class="quote reveal">
+        <p class="stars" aria-label="5 out of 5 stars">★★★★★</p>
+        <blockquote>“No subscription no IAP ad-free and does what it says on the tin.”</blockquote>
+        <figcaption>SZYX77 · App Store review, May 2026</figcaption>
+      </figure>
+      <figure class="quote reveal">
+        <p class="stars" aria-label="5 out of 5 stars">★★★★★</p>
+        <blockquote>“Very helpful and easy to use perfect for students”</blockquote>
+        <figcaption>Khatera.s · App Store review, May 2026</figcaption>
+      </figure>
+      <figure class="quote reveal">
+        <p class="stars" aria-label="5 out of 5 stars">★★★★★</p>
+        <blockquote>“…this one really stands out for its simplicity…”</blockquote>
+        <figcaption>javiddd1_ · App Store review, May 2026</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ DETAILS ═════════════ -->
+<section class="details" aria-labelledby="det-h">
+  <div class="wrap det-grid">
     <div>
-      <div class="section-label">Features · 01</div>
-      <h2 class="section-title" style="margin-top:24px;">Built for <em>exactly one thing</em>.</h2>
+      <p class="eyebrow">The small stuff</p>
+      <h2 id="det-h">Built for exactly one&nbsp;job.</h2>
+      <p class="lede">No grades, no timetable, no study planner. Just what’s due, and how long you’ve&nbsp;got.</p>
     </div>
-    <p class="section-aside">Everything you need to see what is due next — in the app, on your Home Screen, or at a glance from your Lock Screen.</p>
-  </div>
-
-  <div class="features-grid">
-
-    <!-- F/01 — hero card: live urgency countdown -->
-    <div class="fc-hero reveal">
-      <div class="fc-hero-text">
-        <div class="fc-num">F / 01</div>
-        <div class="fc-title" style="font-size:22px;margin-bottom:14px;">Live Urgency Countdown</div>
-        <div class="fc-desc" style="font-size:14px;">Every assignment shifts colour as the deadline closes in. Green means clear. Red means now. You always know exactly where you stand — without thinking about it.</div>
-        <div style="margin-top:20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <span style="font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--green);background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);padding:4px 10px;border-radius:6px;">5+ DAYS</span>
-          <span style="color:var(--border-2);font-size:12px;">→</span>
-          <span style="font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--yellow);background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);padding:4px 10px;border-radius:6px;">2–4 DAYS</span>
-          <span style="color:var(--border-2);font-size:12px;">→</span>
-          <span style="font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--orange);background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);padding:4px 10px;border-radius:6px;">24–48H</span>
-          <span style="color:var(--border-2);font-size:12px;">→</span>
-          <span style="font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--red);background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);padding:4px 10px;border-radius:6px;">CRITICAL</span>
-        </div>
-      </div>
-      <div class="fc-hero-demo" id="fhDemo">
-        <div class="fhd-card is-green" id="fhd-0">
-          <div class="fhd-icon">📝</div>
-          <div><div class="fhd-name">Marketing Essay</div><div class="fhd-sub">MKT301</div></div>
-          <div class="fhd-time" id="fhdt-0">6D LEFT</div>
-          <div class="fhd-line"></div>
-        </div>
-        <div class="fhd-card is-yellow" id="fhd-1">
-          <div class="fhd-icon">📊</div>
-          <div><div class="fhd-name">Finance Report</div><div class="fhd-sub">FIN202</div></div>
-          <div class="fhd-time" id="fhdt-1">3D 04H</div>
-          <div class="fhd-line"></div>
-        </div>
-        <div class="fhd-card is-orange" id="fhd-2">
-          <div class="fhd-icon">🧠</div>
-          <div><div class="fhd-name">Psychology Quiz</div><div class="fhd-sub">PSY101</div></div>
-          <div class="fhd-time" id="fhdt-2">1D 06H</div>
-          <div class="fhd-line"></div>
-        </div>
-        <div class="fhd-card is-red" id="fhd-3">
-          <div class="fhd-icon">⚖️</div>
-          <div><div class="fhd-name">Law Case Study</div><div class="fhd-sub">LAW401</div></div>
-          <div class="fhd-time" id="fhdt-3">04H 23M 11S</div>
-          <div class="fhd-line"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- F/02 — subjects with colours -->
-    <div class="fc reveal delay-1">
-      <div class="fc-num">F / 02</div>
-      <div class="fc-title">Subjects with Colours &amp; Icons</div>
-      <div class="fc-desc">Eight signature colours. Twelve icons. Every subject gets its own identity — so your dashboard tells the story at a glance.</div>
-      <div class="fc-visual">
-        <div class="fc-swatches">
-          <div class="fc-swatch" style="background:#5E5CE6;"></div>
-          <div class="fc-swatch" style="background:#FF3B30;"></div>
-          <div class="fc-swatch" style="background:#FF9500;"></div>
-          <div class="fc-swatch" style="background:#34C759;"></div>
-          <div class="fc-swatch" style="background:#30B0C7;"></div>
-          <div class="fc-swatch" style="background:#007AFF;"></div>
-          <div class="fc-swatch" style="background:#FF2D55;"></div>
-          <div class="fc-swatch" style="background:#8E8E93;"></div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-          <span style="font-size:18px;">📚</span><span style="font-size:18px;">🧪</span><span style="font-size:18px;">🌐</span>
-          <span style="font-size:18px;">💻</span><span style="font-size:18px;">🎨</span><span style="font-size:18px;">💼</span>
-          <span style="font-size:18px;">🎵</span><span style="font-size:18px;">📈</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- F/03 — complete & undo -->
-    <div class="fc reveal delay-2">
-      <div class="fc-num">F / 03</div>
-      <div class="fc-title">Complete &amp; Undo</div>
-      <div class="fc-desc">Tap the circle to mark done. Tap again to bring it back. No time limit, no confirmation — just a toggle.</div>
-      <div class="fc-visual">
-        <div class="fc-task" id="fcTask1">
-          <div class="fc-check" id="fcCheck1" onclick="toggleTask(1)" style="cursor:pointer;"></div>
-          <div class="fc-task-name" id="fcName1">Research proposal draft</div>
-        </div>
-        <div class="fc-task" id="fcTask2" style="margin-top:8px;">
-          <div class="fc-check" id="fcCheck2" onclick="toggleTask(2)" style="cursor:pointer;"></div>
-          <div class="fc-task-name" id="fcName2">Literature review</div>
-        </div>
-        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-top:14px;text-transform:uppercase;">Tap a circle to try it</div>
-      </div>
-    </div>
-
-    <!-- F/04 — overview screen -->
-    <div class="fc reveal delay-3">
-      <div class="fc-num">F / 04</div>
-      <div class="fc-title">Overview</div>
-      <div class="fc-desc">See upcoming assignments across all subjects in one place. A read-only view focused on what is due next.</div>
-      <div class="fc-visual">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-          <div style="width:14px;height:2px;background:#FF3B30;border-radius:1px;"></div>
-          <div style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.5px;color:#FF3B30;">LAW401</div>
-          <div style="flex:1;height:2px;background:#FF3B30;border-radius:1px;opacity:0.5;"></div>
-        </div>
-        <div style="position:relative;display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px;">
-          <div style="flex:1;">
-            <div style="font-size:13px;font-weight:500;color:var(--white);">Case Study Analysis</div>
-            <div style="font-size:11px;color:var(--muted);">Due tomorrow, 11:59pm</div>
-          </div>
-          <div style="font-family:var(--mono);font-size:11px;color:var(--red);">14H 32M</div>
-          <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--red);animation:pulse-line 1.2s ease-in-out infinite;"></div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-          <div style="width:14px;height:2px;background:#5E5CE6;border-radius:1px;"></div>
-          <div style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.5px;color:#5E5CE6;">MKT301</div>
-          <div style="flex:1;height:2px;background:#5E5CE6;border-radius:1px;opacity:0.5;"></div>
-        </div>
-        <div style="position:relative;display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
-          <div style="flex:1;">
-            <div style="font-size:13px;font-weight:500;color:var(--white);">Marketing Essay</div>
-            <div style="font-size:11px;color:var(--muted);">Due in 6 days</div>
-          </div>
-          <div style="font-family:var(--mono);font-size:11px;color:var(--green);">6D LEFT</div>
-          <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--green);"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- F/05 — swipe to delete + clear all -->
-    <div class="fc reveal delay-4">
-      <div class="fc-num">F / 05</div>
-      <div class="fc-title">Swipe to Delete</div>
-      <div class="fc-desc">Swipe an assignment to remove it. Or hit Clear All Data in Settings for a clean slate at the start of a new semester.</div>
-      <div class="fc-visual">
-        <div class="fc-swipe-wrap">
-          <div class="fc-swipe-delete">
-            <span>🗑</span>
-          </div>
-          <div class="fc-swipe-card" id="fcSwipeCard">
-            <div class="fc-swipe-icon">📝</div>
-            <div>
-              <div class="fc-swipe-name">Literature Review</div>
-              <div class="fc-swipe-sub">Due: 20 May @ 11:59pm</div>
-            </div>
-          </div>
-        </div>
-        <div class="fc-swipe-hint" id="fcSwipeHint">← swipe to delete</div>
-        <div class="fc-clear-row">
-          <div class="fc-clear-badge">⚙ Settings → Clear All Data</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Fresh start every semester</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- F/06 — works offline -->
-    <div class="fc reveal delay-5">
-      <div class="fc-num">F / 06</div>
-      <div class="fc-title">Works Offline, Always</div>
-      <div class="fc-desc">No internet required. Your data lives on your device. Open the app and it's there.</div>
-      <div class="fc-visual">
-        <div class="fc-offline-badges">
-          <div class="fc-badge good"><div class="fc-badge-dot"></div>No account needed</div>
-          <div class="fc-badge good"><div class="fc-badge-dot"></div>No internet needed</div>
-          <div class="fc-badge good"><div class="fc-badge-dot"></div>Student data stays local</div>
-          <div class="fc-badge good"><div class="fc-badge-dot"></div>No ads. Ever.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- F/07 — push notifications -->
-    <div class="fc reveal delay-6">
-      <div class="fc-num">F / 07</div>
-      <div class="fc-title">Push Notifications</div>
-      <div class="fc-desc">Deadline taps you on the shoulder before it hits. Set a reminder and never be caught off guard.</div>
-      <div class="fc-visual">
-        <div class="fc-notif-cycle" id="fcNotifCycle">
-          <!-- notification 1: 7 days -->
-          <div class="fc-notif fc-notif-slide active" id="fcn-0">
-            <div class="fc-notif-header">
-              <div class="fc-notif-icon">⏱</div>
-              <div class="fc-notif-app">Deadline</div>
-              <div class="fc-notif-time">7d before</div>
-            </div>
-            <div class="fc-notif-title">LAW401 — Case Study</div>
-            <div class="fc-notif-body">📚 Due in 7 days. Get ahead of it.</div>
-            <div class="fc-notif-bar" style="background:var(--green);animation:none;opacity:0.7;"></div>
-          </div>
-          <!-- notification 2: 5 days -->
-          <div class="fc-notif fc-notif-slide" id="fcn-1">
-            <div class="fc-notif-header">
-              <div class="fc-notif-icon">⏱</div>
-              <div class="fc-notif-app">Deadline</div>
-              <div class="fc-notif-time">5d before</div>
-            </div>
-            <div class="fc-notif-title">LAW401 — Case Study</div>
-            <div class="fc-notif-body">📖 Due in 5 days. Make a start.</div>
-            <div class="fc-notif-bar" style="background:var(--green);animation:none;opacity:0.5;"></div>
-          </div>
-          <!-- notification 3: 2 days -->
-          <div class="fc-notif fc-notif-slide" id="fcn-2">
-            <div class="fc-notif-header">
-              <div class="fc-notif-icon">⏱</div>
-              <div class="fc-notif-app">Deadline</div>
-              <div class="fc-notif-time">2d before</div>
-            </div>
-            <div class="fc-notif-title">LAW401 — Case Study</div>
-            <div class="fc-notif-body">⚠️ Due in 2 days. Time to start.</div>
-            <div class="fc-notif-bar" style="background:var(--yellow);animation:none;opacity:0.7;"></div>
-          </div>
-          <!-- notification 4: 24 hours -->
-          <div class="fc-notif fc-notif-slide" id="fcn-3">
-            <div class="fc-notif-header">
-              <div class="fc-notif-icon">⏱</div>
-              <div class="fc-notif-app">Deadline</div>
-              <div class="fc-notif-time">24h before</div>
-            </div>
-            <div class="fc-notif-title">LAW401 — Case Study</div>
-            <div class="fc-notif-body">🔴 Due TOMORROW. Don't leave it.</div>
-            <div class="fc-notif-bar" style="background:var(--orange);animation:none;opacity:0.9;"></div>
-          </div>
-          <!-- notification 5: 1 hour -->
-          <div class="fc-notif fc-notif-slide" id="fcn-4">
-            <div class="fc-notif-header">
-              <div class="fc-notif-icon">⏱</div>
-              <div class="fc-notif-app">Deadline</div>
-              <div class="fc-notif-time">1h before</div>
-            </div>
-            <div class="fc-notif-title">LAW401 — Case Study</div>
-            <div class="fc-notif-body">🚨 FINAL HOUR. Due in 1 hour!</div>
-            <div class="fc-notif-bar"></div>
-          </div>
-        </div>
-        <!-- step dots -->
-        <div class="fc-notif-dots">
-          <div class="fc-notif-dot active" id="fcd-0"></div>
-          <div class="fc-notif-dot" id="fcd-1"></div>
-          <div class="fc-notif-dot" id="fcd-2"></div>
-          <div class="fc-notif-dot" id="fcd-3"></div>
-          <div class="fc-notif-dot" id="fcd-4"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- F/08 — Home Screen widgets -->
-    <div class="fc reveal">
-      <div class="fc-num">F / 08</div>
-      <div class="fc-title">Home Screen Widgets</div>
-      <div class="fc-desc">A small widget for your next assignment and a medium widget for upcoming work across subjects — designed in Deadline's minimal style.</div>
-      <div class="fc-visual">
-        <div style="display:flex;gap:10px;align-items:stretch;">
-          <div style="width:92px;min-height:96px;border-radius:20px;background:var(--card-2);border:1px solid var(--border-2);padding:12px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;">
-            <div style="font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;">Next due</div>
-            <div><div style="font-size:12px;font-weight:600;color:var(--white);">Case Study</div><div style="font-family:var(--mono);font-size:10px;color:var(--red);margin-top:4px;">14H 32M</div></div>
-            <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--red);"></div>
-          </div>
-          <div style="flex:1;min-height:96px;border-radius:20px;background:var(--card-2);border:1px solid var(--border-2);padding:12px;display:flex;flex-direction:column;gap:8px;">
-            <div style="font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;">Upcoming</div>
-            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--white);"><span>LAW401 · Case Study</span><span style="font-family:var(--mono);color:var(--red);">14H</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted-2);"><span>MKT301 · Essay</span><span style="font-family:var(--mono);color:var(--green);">6D</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- F/09 — Lock Screen widgets -->
-    <div class="fc reveal delay-1">
-      <div class="fc-num">F / 09</div>
-      <div class="fc-title">Lock Screen Widgets</div>
-      <div class="fc-desc">Choose a rectangular subject, assignment and countdown view, a circular countdown and progress view, or an inline next-deadline widget.</div>
-      <div class="fc-visual">
-        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <div style="flex:1;min-width:150px;border-radius:12px;background:var(--card-2);border:1px solid var(--border-2);padding:10px 12px;">
-            <div style="font-size:10px;color:var(--muted);">LAW401</div>
-            <div style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;color:var(--white);"><span>Case Study</span><span style="font-family:var(--mono);color:var(--red);">14H</span></div>
-          </div>
-          <div style="width:56px;height:56px;border-radius:50%;border:4px solid var(--red);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--white);">14H</div>
-        </div>
-        <div style="margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted-2);letter-spacing:0.5px;">⏱ Next: Case Study · 14 hours</div>
-      </div>
-    </div>
-
+    <dl class="det-list">
+      <div class="reveal"><dt>Five themes</dt><dd>
+        Aurora, Midnight Rose, Neon Mint, Solar and Glacier. Try one:
+        <span class="themes" role="group" aria-label="Preview an accent theme on this page" id="themes"></span>
+      </dd></div>
+      <div class="reveal"><dt>Overdue first</dt><dd>Anything past due jumps to the top of Overview and takes over the Next Deadline card. It doesn’t get to&nbsp;hide.</dd></div>
+      <div class="reveal"><dt>Undo</dt><dd>Ticked the wrong one? Tap the circle again. Deleted it? Hit&nbsp;UNDO.</dd></div>
+      <div class="reveal"><dt>Fresh semester</dt><dd>Clear everything in Settings and start again in week&nbsp;1.</dd></div>
+      <div class="reveal"><dt>It taps back</dt><dd>Haptics on nearly every action, the way an iPhone app should&nbsp;feel.</dd></div>
+      <div class="reveal"><dt>iPad too</dt><dd>Same app, bigger screen.</dd></div>
+    </dl>
   </div>
 </section>
 
-<!-- URGENCY DEMO -->
-<section class="demo-section" id="demo">
-  <div class="section-head reveal">
-    <div>
-      <div class="section-label">Demo · 02</div>
-      <h2 class="section-title" style="margin-top:24px;">Watch a deadline <em>tick down.</em></h2>
-    </div>
-    <p class="section-aside">A real countdown, running in real time. Notice how the colour and urgency change as the hours slip away.</p>
-  </div>
-
-  <div class="demo-stage reveal">
-    <div class="demo-left" id="demoLeft">
-      <div class="demo-meta">
-        <span>Course · MIS202</span>
-        <div class="demo-state">
-          <span class="dot"></span>
-          <span id="demoState">CRUISING</span>
-        </div>
-      </div>
-      <div class="demo-clock">
-        <span id="demoClock">04D 23H</span>
-        <span class="unit">left</span>
-      </div>
-      <div class="demo-progress-row">
-        <span id="demoStartLabel">5 days</span>
-        <div class="demo-progress-bar"><div class="demo-progress-fill" id="demoFill"></div></div>
-        <span>0</span>
-      </div>
-    </div>
-
-    <div class="demo-right">
-      <div class="demo-card is-green" id="dc-0">
-        <div class="demo-card-icon">📝</div>
-        <div>
-          <div class="demo-card-title">Marketing Essay</div>
-          <div class="demo-card-sub">5+ days</div>
-        </div>
-        <div class="demo-card-time" id="dct-0">6D 04H</div>
-        <div class="demo-card-line"></div>
-      </div>
-      <div class="demo-card is-green" id="dc-1">
-        <div class="demo-card-icon">📊</div>
-        <div>
-          <div class="demo-card-title">Finance Report</div>
-          <div class="demo-card-sub">in 3 days</div>
-        </div>
-        <div class="demo-card-time" id="dct-1">3D 02H</div>
-        <div class="demo-card-line"></div>
-      </div>
-      <div class="demo-card is-green" id="dc-2">
-        <div class="demo-card-icon">🧠</div>
-        <div>
-          <div class="demo-card-title">Psychology Quiz</div>
-          <div class="demo-card-sub">in 30 hours</div>
-        </div>
-        <div class="demo-card-time" id="dct-2">1D 06H</div>
-        <div class="demo-card-line"></div>
-      </div>
-      <div class="demo-card is-green" id="dc-3">
-        <div class="demo-card-icon">⚖️</div>
-        <div>
-          <div class="demo-card-title">Law Case Study</div>
-          <div class="demo-card-sub">in 4 hours</div>
-        </div>
-        <div class="demo-card-time" id="dct-3">04H 23M</div>
-        <div class="demo-card-line"></div>
-      </div>
+<!-- ═════════════ FAQ ═════════════ -->
+<section class="faq" id="faq" aria-labelledby="faq-h">
+  <div class="wrap faq-grid">
+    <h2 id="faq-h">Questions.</h2>
+    <div class="faq-list">
+      <details><summary>Is it actually free?</summary><p>Yes. No subscription, no in-app purchases, no ads. Every feature is there for everyone.</p></details>
+      <details><summary>Do I need an account?</summary><p>No. There’s nothing to sign up for — you open it and add your first subject.</p></details>
+      <details><summary>Is it on Android?</summary><p>Not yet. Deadline is on iPhone (and iPad) and needs iOS 16.4 or later. An Android version is in closed testing.</p></details>
+      <details><summary>Does it connect to Canvas, Moodle or my calendar?</summary><p>No. You add assignments yourself — a title, a date and a time. It takes seconds, and it means Deadline works with any uni and any course.</p></details>
+      <details><summary>Does it track grades or study time?</summary><p>No. It does one thing: what’s due, and how long you’ve got.</p></details>
+      <details><summary>How do the colours work?</summary><p>Green at five or more days out, yellow at two to four, orange inside 48 hours and red inside 24 — when the card starts ticking by the second. It changes on its own.</p></details>
+      <details><summary>Where does my data go?</summary><p>Nowhere. Your subjects and assignments stay on your phone. Delete the app and they go with it. More in the <a href="privacy">privacy policy</a>.</p></details>
+      <details><summary>Can I turn the reminders off?</summary><p>Yes — they’re regular iPhone notifications. The daily reminder is off until you switch it on, and you choose its time.</p></details>
+      <details><summary>Found a bug or have an idea?</summary><p>Email <a href="mailto:deadlineapp.contact@gmail.com">deadlineapp.contact@gmail.com</a>. A real person reads every one. There’s more on the <a href="support">support page</a>.</p></details>
     </div>
   </div>
 </section>
 
-<!-- URGENCY STATIC CARDS -->
-<section class="urgency-section">
-  <div class="section-head reveal">
-    <div>
-      <div class="section-label">Urgency System · 03</div>
-      <h2 class="section-title" style="margin-top:24px;">Four states. <em>One language.</em></h2>
+<!-- ═════════════ FINAL CTA ═════════════ -->
+<section class="final" aria-labelledby="final-h">
+  <div class="wrap final-in">
+    <h2 id="final-h">Put your worst deadline in&nbsp;first.</h2>
+    <div class="tc tc-final" id="finalCard" style="--sc:#FF3B30">
+      <div class="tc-in">
+        <span class="tc-box" aria-hidden="true"></span>
+        <div class="tc-info"><div class="tc-t" id="finalTitle">Research Essay</div><div class="tc-d" id="finalDue">Due: —</div></div>
+        <div class="tc-u" id="finalCount">—</div>
+        <div class="tc-bar"></div>
+      </div>
     </div>
-  </div>
-
-  <div class="urgency-cards">
-    <div class="urgency-card card-green reveal">
-      <div class="urgency-card-time">5+ days</div>
-      <div class="urgency-card-title">Marketing Essay</div>
-      <div class="urgency-card-due">Due in 6 days</div>
-      <div class="urgency-card-badge">6D LEFT</div>
-      <div class="urgency-line"></div>
-    </div>
-    <div class="urgency-card card-yellow reveal delay-1">
-      <div class="urgency-card-time">2–4 days</div>
-      <div class="urgency-card-title">Finance Report</div>
-      <div class="urgency-card-due">Due in 3 days</div>
-      <div class="urgency-card-badge">3D 02H</div>
-      <div class="urgency-line"></div>
-    </div>
-    <div class="urgency-card card-orange reveal delay-2">
-      <div class="urgency-card-time">24–48 hours</div>
-      <div class="urgency-card-title">Psychology Quiz</div>
-      <div class="urgency-card-due">Due in 30 hours</div>
-      <div class="urgency-card-badge">1D 06H</div>
-      <div class="urgency-line"></div>
-    </div>
-    <div class="urgency-card card-red reveal delay-3">
-      <div class="urgency-card-time">Under 24 hours</div>
-      <div class="urgency-card-title">Law Case Study</div>
-      <div class="urgency-card-due">Due in 4 hours</div>
-      <div class="urgency-card-badge"><span id="lawTimer">04H 23M 11S</span></div>
-      <div class="urgency-line"></div>
-    </div>
+    <p class="final-note" id="finalNote">That’s how long you’ve got. Might as well know.</p>
+    <a class="badge badge-lg" href="https://apps.apple.com/app/deadline/id6767482309" data-umami-event="app-store" data-umami-event-where="final">
+      <svg aria-hidden="true"><use href="assets/img/icons.svg#i-logo-apple"/></svg>
+      <span><small>Download on the</small>App Store</span>
+    </a>
+    <ul class="facts center" aria-label="Quick facts"><li>Free</li><li>No account</li><li>iPhone &amp; iPad</li></ul>
   </div>
 </section>
 
-<!-- STATS BAND -->
-<section class="stats-band">
-  <div class="stats-grid">
-    <div class="stat reveal">
-      <div class="stat-num" data-target="0">0</div>
-      <div class="stat-label">Ads. Anywhere.</div>
-      <div class="stat-tag">FOREVER · 00</div>
-    </div>
-    <div class="stat reveal delay-1">
-      <div class="stat-num" data-target="0">0</div>
-      <div class="stat-label">Accounts to make.</div>
-      <div class="stat-tag">NO · LOGIN</div>
-    </div>
-    <div class="stat reveal delay-2">
-      <div class="stat-num" data-target="0">0</div>
-      <div class="stat-label">Subscriptions.</div>
-      <div class="stat-tag">$0.00 / EVER</div>
-    </div>
-    <div class="stat reveal delay-3">
-      <div class="stat-num"><span data-target="100">0</span><span class="pct">%</span></div>
-      <div class="stat-label">Yours, on your device.</div>
-      <div class="stat-tag">PRIVATE · 01</div>
-    </div>
-  </div>
-</section>
+</main>
 
-<!-- REVIEW -->
-<section class="review-section">
-  <div class="section-head reveal">
-    <div>
-      <div class="section-label">App Store Reviews · 04</div>
-      <h2 class="section-title" style="margin-top:24px;">First words <em>from students.</em></h2>
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div class="foot-brand">
+      <img src="assets/img/icon-256.png" alt="" width="40" height="40">
+      <div><p class="wordmark">Deadline<b>.</b></p><p>Your semester, under control.</p></div>
     </div>
-  </div>
-
-  <div class="review-carousel reveal">
-    <div class="review-track" id="reviewTrack">
-
-      <!-- Review 1: SZYX77 -->
-      <div class="review-slide">
-        <div class="review-card">
-          <div class="review-stars">
-            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-          </div>
-          <div class="review-quote" id="reviewQuote">"No subscription, no IAP, ad-free and <em>does what it says on the tin.</em> Looking forward to updates."</div>
-          <div class="review-meta">
-            <div class="review-avatar">S</div>
-            <div class="review-author">
-              <strong>SZYX77</strong>
-              Verified App Store review · 14 May
-            </div>
-            <div class="review-source">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" opacity="0.4"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-              App Store
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Review 2: Khatera.s -->
-      <div class="review-slide">
-        <div class="review-card">
-          <div class="review-stars">
-            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-          </div>
-          <div class="review-quote">"<em>Very helpful</em> and easy to use — <em>perfect for students.</em>"</div>
-          <div class="review-meta">
-            <div class="review-avatar">K</div>
-            <div class="review-author">
-              <strong>Khatera.s</strong>
-              Verified App Store review · 15 May
-            </div>
-            <div class="review-source">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" opacity="0.4"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-              App Store
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Review 3: javiddd1_ -->
-      <div class="review-slide">
-        <div class="review-card">
-          <div class="review-stars">
-            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-          </div>
-          <div class="review-quote">"Compared to the rest of the apps where you have to pay subscriptions and see tons of ads, this one <em>really stands out</em> for its simplicity. Highly recommended."</div>
-          <div class="review-meta">
-            <div class="review-avatar">J</div>
-            <div class="review-author">
-              <strong>javiddd1_</strong>
-              Verified App Store review · 24 May
-            </div>
-            <div class="review-source">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" opacity="0.4"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-              App Store
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-    <!-- dots -->
-    <div class="review-dots" id="reviewDots">
-      <div class="review-dot active" data-idx="0"></div>
-      <div class="review-dot" data-idx="1"></div>
-      <div class="review-dot" data-idx="2"></div>
-    </div>
-  </div>
-</section>
-
-<!-- FRICTION CALCULATOR -->
-<section class="calculator-section reveal">
-  <div class="section-head">
-    <div>
-      <div class="section-label">Friction Math · 05</div>
-      <h2 class="section-title" style="margin-top:24px;">Stop paying the <em>bloat tax.</em></h2>
-    </div>
-    <p class="section-aside">Most productivity tools make you a database engineer before you've typed a single task. Drag to compare.</p>
-  </div>
-  <div class="calc-container">
-    <div class="calc-left">
-      <div class="calc-slider-wrapper">
-        <div class="calc-slider-header">
-          <span>Subjects to set up:</span>
-          <span><strong id="sliderVal">3</strong> Subjects</span>
-        </div>
-        <input type="range" min="1" max="6" value="3" class="calc-slider" id="taskSlider">
-      </div>
-    </div>
-
-    <div class="calc-right">
-      <!-- Notion Column -->
-      <div class="calc-card">
-        <div>
-          <span class="calc-card-meta">Database Architecture (Notion / GSheets)</span>
-          <div class="calc-metric" id="bloatSetup">25m 00s</div>
-        </div>
-        <div class="calc-metric-sub">
-          Setup time playing table layout designer before typing any tasks.
-          <ul class="calc-step-list">
-            <li>Create tables &amp; relations</li>
-            <li>Configure formulas for dates</li>
-            <li>Sort, filter, group by tags</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Deadline Column -->
-      <div class="calc-card is-deadline">
-        <div>
-          <span class="calc-card-meta">Native Ritual (Deadline App)</span>
-          <div class="calc-metric" id="deadlineSetup">6m 00s</div>
-        </div>
-        <div class="calc-metric-sub">
-          Organic flow to name, colour, and assign dates right on your screen.
-          <ul class="calc-step-list">
-            <li>Name subject &amp; pick custom colour</li>
-            <li>Add assignments with native "+"</li>
-            <li>Tactile scroll datewheel &amp; AM/PM</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-section">
-  <div class="cta-box reveal" id="ctaBox">
-    <div class="rings"><span></span><span></span><span></span></div>
-    <div class="cta-inner">
-      <h2>Your deadlines,<br><em>handled.<svg viewBox="0 0 200 30" preserveAspectRatio="none"><path d="M5 22 Q 50 6, 100 18 T 195 14"/></svg></em></h2>
-      <p>Your next deadline is already counting down.<br>You should know exactly how much time you have.</p>
-      <a href="https://apps.apple.com/us/app/deadline/id6767482309" target="_blank" class="appstore-badge" style="display: inline-flex;">
-        <div class="appstore-badge-left">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="#000"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-        </div>
-        <div class="appstore-badge-text">
-          <span class="small">Download on the</span>
-          <span class="big">App Store</span>
-        </div>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-marquee" aria-hidden="true">
-    <div class="marquee">
-      <span>deadline.</span><span>deadline.</span><span>deadline.</span><span>deadline.</span>
-      <span>deadline.</span><span>deadline.</span><span>deadline.</span><span>deadline.</span>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <div class="footer-logo">deadline.</div>
-    <div>Made with purpose. Free to use.</div>
-    <div>© 2026 Deadline. All rights reserved.</div>
-    <div>
-      <a href="https://github.com/Zukof1/deadline-app" target="_blank">GitHub</a>
-      &nbsp;·&nbsp;
-      <a href="support.html">Support</a>
-      &nbsp;·&nbsp;
-      <a href="privacy.html">Privacy</a>
-    </div>
+    <nav aria-label="Footer">
+      <a href="https://apps.apple.com/app/deadline/id6767482309" data-umami-event="app-store" data-umami-event-where="footer">App Store</a>
+      <a href="support">Support</a>
+      <a href="privacy">Privacy</a>
+      <a href="mailto:deadlineapp.contact@gmail.com">Contact</a>
+    </nav>
+    <p class="foot-small">Built by a student who needed it. © 2026 Deadline.</p>
   </div>
 </footer>
 
-<script>
-  /* ─── Scroll progress bar ─── */
-  const progressEl = document.getElementById('scrollProgress');
-  function updateProgress() {
-    const h = document.documentElement;
-    const scrolled = h.scrollTop;
-    const total = h.scrollHeight - h.clientHeight;
-    const pct = total > 0 ? (scrolled / total) * 100 : 0;
-    progressEl.style.width = pct + '%';
-  }
-  window.addEventListener('scroll', updateProgress, { passive: true });
-  updateProgress();
-
-  /* ─── Hero spotlight ─── */
-  const heroSpot = document.getElementById('heroSpot');
-  const hero = document.querySelector('.hero');
-  hero.addEventListener('mousemove', (e) => {
-    const rect = hero.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    heroSpot.style.setProperty('--mx', x + '%');
-    heroSpot.style.setProperty('--my', y + '%');
-  });
-
-  /* ─── Soft type-in effect on the italic line (no scramble, no colour shift) ─── */
-  function softType(el, finalText, duration = 700) {
-    const chars = finalText.split('');
-    const start = performance.now();
-    function frame(now) {
-      const t = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - t, 2);
-      const count = Math.floor(eased * chars.length);
-      let out = '';
-      for (let i = 0; i < chars.length; i++) {
-        if (i < count) out += chars[i];
-        else out += chars[i] === ' ' ? '\u00A0' : '\u00A0';
-      }
-      el.textContent = out;
-      if (t < 1) requestAnimationFrame(frame);
-      else el.textContent = finalText;
-    }
-    requestAnimationFrame(frame);
-  }
-  const scrambleEl = document.querySelector('.scramble');
-  if (scrambleEl) {
-    setTimeout(() => softType(scrambleEl, scrambleEl.dataset.final, 700), 450);
-  }
-
-  /* ─── Nav clock ─── */
-  function pad(n, l = 2) { return String(n).padStart(l, '0'); }
-  function updateNavTime() {
-    const d = new Date();
-    document.getElementById('navTimeText').textContent =
-      'SYNC · ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
-  }
-  setInterval(updateNavTime, 1000); updateNavTime();
-
-  /* ─── Live countdowns (hero chip + law card) ─── */
-  let liveSeconds = 4 * 3600 + 23 * 60 + 11;
-  function fmtFull(s) {
-    if (s < 0) s = 0;
-    const h = Math.floor(s / 3600);
-    const m = Math.floor((s % 3600) / 60);
-    const sec = s % 60;
-    return pad(h) + 'H ' + pad(m) + 'M ' + pad(sec) + 'S';
-  }
-  function tickLive() {
-    liveSeconds = Math.max(0, liveSeconds - 1);
-    const v = fmtFull(liveSeconds);
-    const a = document.getElementById('liveTimer'); if (a) a.textContent = v;
-    const b = document.getElementById('lawTimer'); if (b) b.textContent = v;
-  }
-  setInterval(tickLive, 1000);
-
-  /* ─── Auto-playing demo (loops) ─── */
-  const demoLeft = document.getElementById('demoLeft');
-  const demoClock = document.getElementById('demoClock');
-  const demoFill = document.getElementById('demoFill');
-  const demoStateEl = document.getElementById('demoState');
-  const dcards = [0,1,2,3].map(i => document.getElementById('dc-' + i));
-  const dtimes = [0,1,2,3].map(i => document.getElementById('dct-' + i));
-  // Each card has a base offset (in hours) ahead of "now". As demo time advances, time-left decreases.
-  // Demo time advances 5 days (120h) over a 14s loop.
-  const DEMO_LOOP_MS = 14000;
-  const CARD_BASE_HOURS = [144, 72, 30, 4]; // initial time-left in hours
-
-  function colorForHours(h) {
-    if (h >= 120) return { cls: 'is-green', glow: 'rgba(34,197,94,0.10)', color: '#22c55e', state: 'CRUISING' };
-    if (h >= 48) return { cls: 'is-yellow', glow: 'rgba(234,179,8,0.10)', color: '#eab308', state: 'CLOSING IN' };
-    if (h >= 24) return { cls: 'is-orange', glow: 'rgba(249,115,22,0.10)', color: '#f97316', state: 'URGENT' };
-    return { cls: 'is-red', glow: 'rgba(239,68,68,0.12)', color: '#ef4444', state: 'CRITICAL' };
-  }
-  function fmtHoursLeft(totalHrs) {
-    if (totalHrs <= 0) return 'DUE';
-    if (totalHrs >= 24) {
-      const d = Math.floor(totalHrs / 24);
-      const h = Math.floor(totalHrs % 24);
-      return pad(d) + 'D ' + pad(h) + 'H';
-    } else {
-      const h = Math.floor(totalHrs);
-      const m = Math.floor((totalHrs - h) * 60);
-      return pad(h) + 'H ' + pad(m) + 'M';
-    }
-  }
-  function setCardColor(card, cls) {
-    card.classList.remove('is-green','is-yellow','is-orange','is-red','urgent');
-    card.classList.add(cls);
-    if (cls === 'is-red') card.classList.add('urgent');
-  }
-  function runDemo(now) {
-    const t = ((now % DEMO_LOOP_MS) / DEMO_LOOP_MS); // 0..1
-    const elapsedHours = t * 120; // 0..120h
-    // hero card (the focus): use the "law case study" base (4h) - elapsedHours doesn't really apply
-    // For the big clock, use the closest non-overdue card's time-left
-    // Find primary card = card 0 (Marketing Essay, 144h base) — show its countdown
-    let primaryHrs = Math.max(0, CARD_BASE_HOURS[0] - elapsedHours);
-    const c = colorForHours(primaryHrs);
-    demoClock.textContent = fmtHoursLeft(primaryHrs);
-    demoClock.style.color = c.color;
-    demoLeft.style.setProperty('--demo-glow', c.glow);
-    demoLeft.style.setProperty('--demo-color', c.color);
-    demoStateEl.textContent = c.state;
-    // progress fill: % of countdown elapsed
-    const pct = Math.min(100, (elapsedHours / 144) * 100);
-    demoFill.style.width = pct + '%';
-    demoFill.style.background = c.color;
-    // each card
-    for (let i = 0; i < 4; i++) {
-      const left = Math.max(0, CARD_BASE_HOURS[i] - elapsedHours);
-      const cc = colorForHours(left);
-      setCardColor(dcards[i], cc.cls);
-      dtimes[i].textContent = fmtHoursLeft(left);
-    }
-    requestAnimationFrame(runDemo);
-  }
-  requestAnimationFrame(runDemo);
-
-  /* ─── Number counter ─── */
-  function countUp(el, target, duration = 1400) {
-    const start = performance.now();
-    function frame(now) {
-      const t = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - t, 3);
-      el.textContent = Math.round(target * eased);
-      if (t < 1) requestAnimationFrame(frame);
-      else el.textContent = target;
-    }
-    requestAnimationFrame(frame);
-  }
-
-  /* ─── IntersectionObserver: reveals + counters + cta + review ─── */
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in-view');
-        // counter
-        if (entry.target.matches('.stat')) {
-          const targets = entry.target.querySelectorAll('[data-target]');
-          targets.forEach(t => countUp(t, parseInt(t.dataset.target, 10)));
-        }
-        io.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.12, rootMargin: '0px 0px -10% 0px' });
-
-  document.querySelectorAll('.reveal, .stat, .review-section, .cta-box').forEach(el => io.observe(el));
-
-  /* ─── Sample-app countdowns: per-card formats + split-flap flips ─── */
-  (function () {
-    const board = document.querySelector('.board-wrap');
-    if (!board) return;
-    const cards = [...board.querySelectorAll('.app-card')];
-    const boardClock = document.getElementById('boardClock');
-    const nextDueEl = document.getElementById('nextDue');
-
-    function fmtHMS(s) {
-      if (s <= 0) return 'DUE';
-      const h = Math.floor(s / 3600);
-      const m = Math.floor((s % 3600) / 60);
-      const sec = s % 60;
-      return h + 'H ' + m + 'M ' + sec + 'S';
-    }
-    function fmtHM(s) {
-      if (s <= 0) return 'DUE';
-      const h = Math.floor(s / 3600);
-      const m = Math.floor((s % 3600) / 60);
-      return h + 'H ' + pad(m) + 'M';
-    }
-    function fmtDH(s) {
-      if (s <= 0) return 'DUE';
-      const d = Math.floor(s / 86400);
-      const h = Math.floor((s % 86400) / 3600);
-      return d + 'D ' + pad(h) + 'H';
-    }
-    function fmtDLeft(s) {
-      if (s <= 0) return 'DUE';
-      const d = Math.floor(s / 86400);
-      return d + 'D LEFT';
-    }
-    function format(card, sec) {
-      const fmt = card.dataset.fmt;
-      if (fmt === 'hms') return fmtHMS(sec);
-      if (fmt === 'dh') return fmtDH(sec);
-      if (fmt === 'dleft') return fmtDLeft(sec);
-      return fmtDH(sec);
-    }
-
-    function flipTo(flipEl, newText) {
-      if (flipEl.dataset.flipping === '1') return;
-      const cur = flipEl.querySelector('.flip-cur');
-      if (!cur || cur.textContent === newText) return;
-      flipEl.dataset.flipping = '1';
-      const nxt = document.createElement('span');
-      nxt.className = 'flip-nxt';
-      nxt.textContent = newText;
-      flipEl.appendChild(nxt);
-      void flipEl.offsetWidth;
-      flipEl.classList.add('flipping');
-      setTimeout(() => {
-        cur.textContent = newText;
-        nxt.remove();
-        flipEl.classList.remove('flipping');
-        flipEl.dataset.flipping = '0';
-      }, 580);
-    }
-    function setPlain(flipEl, newText) {
-      const cur = flipEl.querySelector('.flip-cur');
-      if (cur && cur.textContent !== newText) cur.textContent = newText;
-    }
-
-    const state = cards.map(card => ({
-      el: card,
-      flip: card.querySelector('.flip'),
-      sec: parseInt(card.dataset.seconds, 10),
-      live: card.dataset.live === '1',
-      lastShown: card.querySelector('.flip-cur').textContent
-    }));
-
-    function tick() {
-      const d = new Date();
-      if (boardClock) boardClock.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
-
-      let mostUrgent = null;
-      state.forEach(s => {
-        if (s.sec > 0) s.sec -= 1;
-        const target = format(s.el, s.sec);
-        if (s.live) {
-          setPlain(s.flip, target);
-        } else if (target !== s.lastShown) {
-          flipTo(s.flip, target);
-          s.lastShown = target;
-        }
-        if (!mostUrgent || s.sec < mostUrgent.sec) mostUrgent = s;
-      });
-      if (nextDueEl && mostUrgent) nextDueEl.textContent = fmtHM(mostUrgent.sec);
-    }
-    tick();
-    setInterval(tick, 1000);
-  })();
-  /* ─── Review Carousel ─── */
-  (function () {
-    const carousel = document.querySelector('.review-carousel');
-    const track    = document.getElementById('reviewTrack');
-    const dots     = document.querySelectorAll('.review-dot');
-    if (!track) return;
-    const slides = track.querySelectorAll('.review-slide');
-    const total  = slides.length;
-    let current  = 0;
-    let timer;
-
-    function goTo(idx) {
-      current = (idx + total) % total;
-      track.style.transform = 'translateX(-' + (current * 100) + '%)';
-      dots.forEach((d, i) => d.classList.toggle('active', i === current));
-    }
-
-    function next() { goTo(current + 1); }
-
-    function startAuto() {
-      clearInterval(timer);
-      timer = setInterval(next, 4800);
-    }
-
-    function stopAuto() {
-      clearInterval(timer);
-    }
-
-    // dot clicks
-    dots.forEach(d => {
-      d.addEventListener('click', () => {
-        goTo(parseInt(d.dataset.idx));
-        startAuto();
-      });
-    });
-
-    // pause on hover, resume on leave
-    carousel.addEventListener('mouseenter', stopAuto);
-    carousel.addEventListener('mouseleave', startAuto);
-
-    // ── Touch swipe ──
-    let touchStartX = 0;
-    let touchDeltaX = 0;
-    let isTouching  = false;
-
-    carousel.addEventListener('touchstart', e => {
-      touchStartX = e.touches[0].clientX;
-      touchDeltaX = 0;
-      isTouching  = true;
-      stopAuto();
-      track.classList.add('no-transition');
-    }, { passive: true });
-
-    carousel.addEventListener('touchmove', e => {
-      if (!isTouching) return;
-      touchDeltaX = e.touches[0].clientX - touchStartX;
-      const base = current * 100;
-      const offset = (touchDeltaX / carousel.offsetWidth) * 100;
-      track.style.transform = 'translateX(calc(-' + base + '% + ' + offset + 'px))';
-    }, { passive: true });
-
-    carousel.addEventListener('touchend', () => {
-      isTouching = false;
-      track.classList.remove('no-transition');
-      if (touchDeltaX < -50) goTo(current + 1);
-      else if (touchDeltaX > 50) goTo(current - 1);
-      else goTo(current);
-      startAuto();
-    });
-
-    // ── Mouse drag ──
-    let mouseStartX = 0;
-    let mouseDeltaX = 0;
-    let isDragging  = false;
-
-    carousel.addEventListener('mousedown', e => {
-      mouseStartX = e.clientX;
-      mouseDeltaX = 0;
-      isDragging  = true;
-      carousel.classList.add('is-dragging');
-      stopAuto();
-      track.classList.add('no-transition');
-      e.preventDefault();
-    });
-
-    window.addEventListener('mousemove', e => {
-      if (!isDragging) return;
-      mouseDeltaX = e.clientX - mouseStartX;
-      const base   = current * 100;
-      const offset = (mouseDeltaX / carousel.offsetWidth) * 100;
-      track.style.transform = 'translateX(calc(-' + base + '% + ' + offset + 'px))';
-    });
-
-    window.addEventListener('mouseup', () => {
-      if (!isDragging) return;
-      isDragging = false;
-      carousel.classList.remove('is-dragging');
-      track.classList.remove('no-transition');
-      if (mouseDeltaX < -50) goTo(current + 1);
-      else if (mouseDeltaX > 50) goTo(current - 1);
-      else goTo(current);
-      startAuto();
-    });
-
-    // kick off when section enters view
-    const section = document.querySelector('.review-section');
-    const starWatcher = new MutationObserver(() => {
-      if (section.classList.contains('in-view')) {
-        startAuto();
-        starWatcher.disconnect();
-      }
-    });
-    starWatcher.observe(section, { attributes: true, attributeFilter: ['class'] });
-    if (section.classList.contains('in-view')) startAuto();
-  })();
-
-  /* ─── Tweaks panel: Mood / Palette / Atmosphere ─── */
-  (function () {
-    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-      "mood": "kinetic",
-      "palette": "signal",
-      "atmosphere": "studio"
-    }/*EDITMODE-END*/;
-
-    const LABELS = {
-      mood: { editorial: 'Editorial', kinetic: 'Kinetic', engineered: 'Engineered' },
-      palette: { signal: 'Signal', sunset: 'Sunset', mono: 'Mono' },
-      atmosphere: { pure: 'Pure', studio: 'Studio', aurora: 'Aurora' }
-    };
-
-    const panel = document.getElementById('tweaksPanel');
-    if (!panel) return;
-    let tweaks = Object.assign({}, TWEAK_DEFAULTS);
-
-    function applyTweaks(t) {
-      const b = document.body;
-      ['editorial','kinetic','engineered'].forEach(v => b.classList.remove('mood-' + v));
-      b.classList.add('mood-' + t.mood);
-      ['signal','sunset','mono'].forEach(v => b.classList.remove('palette-' + v));
-      b.classList.add('palette-' + t.palette);
-      ['pure','studio','aurora'].forEach(v => b.classList.remove('atm-' + v));
-      b.classList.add('atm-' + t.atmosphere);
-
-      panel.querySelectorAll('.tp-radio').forEach(g => {
-        const key = g.dataset.key;
-        g.querySelectorAll('button').forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.value === t[key]);
-        });
-      });
-      panel.querySelectorAll('[data-display]').forEach(el => {
-        const k = el.dataset.display;
-        el.textContent = (LABELS[k] && LABELS[k][t[k]]) || t[k];
-      });
-    }
-    applyTweaks(tweaks);
-
-    // wire control clicks
-    panel.querySelectorAll('.tp-radio').forEach(g => {
-      const key = g.dataset.key;
-      g.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('click', () => {
-          tweaks[key] = btn.dataset.value;
-          applyTweaks(tweaks);
-          window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [key]: btn.dataset.value } }, '*');
-        });
-      });
-    });
-
-    function show() { panel.classList.add('open'); panel.setAttribute('aria-hidden','false'); }
-    function hide() { panel.classList.remove('open'); panel.setAttribute('aria-hidden','true'); }
-
-    panel.querySelector('.tp-close').addEventListener('click', () => {
-      hide();
-      window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
-    });
-
-    window.addEventListener('message', (e) => {
-      if (!e.data || !e.data.type) return;
-      if (e.data.type === '__activate_edit_mode') show();
-      else if (e.data.type === '__deactivate_edit_mode') hide();
-    });
-
-    // announce availability after listener is wired
-    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
-  })();
-
-  /* ─── Features section: live urgency cards + HMS ticker ─── */
-  (function () {
-    function pad(n) { return String(n).padStart(2,'0'); }
-
-    /* Task toggle for F/03 */
-    window.toggleTask = function(id) {
-      const task  = document.getElementById('fcTask'  + id);
-      const check = document.getElementById('fcCheck' + id);
-      const name  = document.getElementById('fcName'  + id);
-      if (!task) return;
-      const done = task.classList.toggle('done');
-      check.textContent  = done ? '✓' : '';
-      check.style.background   = done ? 'var(--green)' : '';
-      check.style.borderColor  = done ? 'var(--green)' : '';
-      check.style.color        = done ? '#000' : '';
-      name.style.textDecoration = done ? 'line-through' : '';
-      name.style.color          = done ? 'var(--muted)' : '';
-      task.style.opacity        = done ? '0.45' : '1';
-    };
-
-    /* Notification cycle for F/07 — cycles through 4 scheduled reminders */
-    let notifIdx = 0;
-    const NOTIF_COUNT = 5;
-    function cycleNotif() {
-      const prev = notifIdx;
-      notifIdx = (notifIdx + 1) % NOTIF_COUNT;
-      const prevEl = document.getElementById('fcn-' + prev);
-      const nextEl = document.getElementById('fcn-' + notifIdx);
-      const prevDot = document.getElementById('fcd-' + prev);
-      const nextDot = document.getElementById('fcd-' + notifIdx);
-      if (!prevEl || !nextEl) return;
-      prevEl.classList.add('exit');
-      prevEl.classList.remove('active');
-      nextEl.classList.add('active');
-      nextEl.classList.remove('exit');
-      if (prevDot) prevDot.classList.remove('active');
-      if (nextDot) nextDot.classList.add('active');
-      setTimeout(() => { prevEl.classList.remove('exit'); }, 450);
-    }
-    setInterval(cycleNotif, 2800);
-    let hmsS = 4*3600 + 23*60 + 11;
-    function tickHMS() {
-      hmsS = Math.max(0, hmsS - 1);
-      const h = Math.floor(hmsS/3600);
-      const m = Math.floor((hmsS%3600)/60);
-      const s = hmsS%60;
-      const eH = document.getElementById('fcH');
-      const eM = document.getElementById('fcM');
-      const eS = document.getElementById('fcS');
-      if (eH) eH.textContent = pad(h);
-      if (eM) eM.textContent = pad(m);
-      if (eS) eS.textContent = pad(s);
-      /* also keep fhd-3 in sync */
-      const t3 = document.getElementById('fhdt-3');
-      if (t3) t3.textContent = pad(h)+'H '+pad(m)+'M '+pad(s)+'S';
-    }
-    setInterval(tickHMS, 1000);
-
-    /* Feature hero cards: cycle through urgency states every 3s */
-    const STATES = [
-      { cls:'is-green',  times:['6D LEFT','3D 04H','1D 06H'] },
-      { cls:'is-yellow', times:['5D 12H', '2D 08H','18H 30M'] },
-      { cls:'is-orange', times:['4D 02H', '1D 22H','32H 14M'] },
-      { cls:'is-red',    times:['3D 06H', '22H 50M','4H 23M'] },
-    ];
-    /* cards 0-2 cycle independently, card 3 is always red + live */
-    const offsets = [0, 1, 2];
-    let cycle = 0;
-    function stepCards() {
-      cycle++;
-      offsets.forEach((off, i) => {
-        const idx = (cycle + off) % STATES.length;
-        const card = document.getElementById('fhd-' + i);
-        const timeEl = document.getElementById('fhdt-' + i);
-        if (!card || !timeEl) return;
-        STATES.forEach(s => card.classList.remove(s.cls));
-        card.classList.add(STATES[idx].cls);
-        timeEl.textContent = STATES[idx].times[i];
-      });
-    }
-    setInterval(stepCards, 3000);
-  })();
-
-  /* ─── Friction Calculator ─── */
-  (function () {
-    const slider = document.getElementById('taskSlider');
-    const sliderVal = document.getElementById('sliderVal');
-    const bloatEl = document.getElementById('bloatSetup');
-    const deadlineEl = document.getElementById('deadlineSetup');
-    if (!slider) return;
-
-    // Per-subject setup times in seconds
-    const BLOAT_BASE = 300;   // 5 min base (open app, create page)
-    const BLOAT_PER  = 480;   // 8 min per subject (table, formulas, tags)
-    const DL_BASE    = 60;    // 1 min base
-    const DL_PER     = 90;    // 1.5 min per subject (name, colour, done)
-
-    function fmt(secs) {
-      const m = Math.floor(secs / 60);
-      const s = secs % 60;
-      return m + 'm ' + String(s).padStart(2, '0') + 's';
-    }
-
-    function update() {
-      const n = parseInt(slider.value, 10);
-      sliderVal.textContent = n;
-      bloatEl.textContent   = fmt(BLOAT_BASE + n * BLOAT_PER);
-      deadlineEl.textContent = fmt(DL_BASE + n * DL_PER);
-    }
-
-    slider.addEventListener('input', update);
-    update();
-  })();
-</script>
-
-<!-- TWEAKS PANEL -->
-<aside id="tweaksPanel" class="tweaks-panel" aria-hidden="true">
-  <header class="tp-header">
-    <div class="tp-title"><span class="tp-title-dot"></span>Tweaks</div>
-    <button class="tp-close" aria-label="Close tweaks">✕</button>
-  </header>
-  <div class="tp-body">
-    <div class="tp-section">
-      <div class="tp-label"><span>Mood</span><span class="tp-value" data-display="mood">Kinetic</span></div>
-      <div class="tp-radio" data-key="mood">
-        <button data-value="editorial">Editorial</button>
-        <button data-value="kinetic">Kinetic</button>
-        <button data-value="engineered">Engineered</button>
-      </div>
-      <div class="tp-hint">Editorial leans into serif italic; Engineered swaps in monospaced headings; Kinetic is the default sans.</div>
-    </div>
-    <div class="tp-section">
-      <div class="tp-label"><span>Palette</span><span class="tp-value" data-display="palette">Signal</span></div>
-      <div class="tp-radio" data-key="palette">
-        <button data-value="signal">Signal</button>
-        <button data-value="sunset">Sunset</button>
-        <button data-value="mono">Mono</button>
-      </div>
-      <div class="tp-hint">Signal is the cool→hot urgency ramp; Sunset stays warm; Mono mutes everything except the critical reds.</div>
-    </div>
-    <div class="tp-section">
-      <div class="tp-label"><span>Atmosphere</span><span class="tp-value" data-display="atmosphere">Studio</span></div>
-      <div class="tp-radio" data-key="atmosphere">
-        <button data-value="pure">Pure</button>
-        <button data-value="studio">Studio</button>
-        <button data-value="aurora">Aurora</button>
-      </div>
-      <div class="tp-hint">Pure is flat black; Studio adds the noise + cursor spotlight; Aurora layers drifting coloured glows in the hero.</div>
-    </div>
-  </div>
-</aside>
+<dialog class="filmbox" id="filmBox" aria-label="The 11:58 confession, a short film">
+  <button class="filmbox-x" type="button" id="filmClose" aria-label="Close"><svg aria-hidden="true"><use href="assets/img/icons.svg#i-close"/></svg></button>
+  <video id="filmVideo" controls playsinline preload="none" poster="assets/video/ad-1158-confession.jpg" width="720" height="1280" data-src="assets/video/ad-1158-confession.mp4"></video>
+</dialog>
 
 </body>
 </html>

@@ -1,454 +1,98 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Privacy Policy — Deadline.</title>
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --black: #080808;
-    --dark: #111111;
-    --card: #141414;
-    --border: #1e1e1e;
-    --border-2: #262626;
-    --white: #ffffff;
-    --muted: #555555;
-    --muted-2: #8a8a8a;
-    --green: #22c55e;
-    --yellow: #eab308;
-    --orange: #f97316;
-    --red: #ef4444;
-    --mono: 'JetBrains Mono', ui-monospace, monospace;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--black);
-    color: var(--white);
-    font-family: 'Satoshi', sans-serif;
-    font-weight: 300;
-    line-height: 1.8;
-    overflow-x: hidden;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.4;
-  }
-
-  .scroll-progress {
-    position: fixed;
-    top: 0; left: 0;
-    height: 2px;
-    width: 0%;
-    background: linear-gradient(90deg, var(--green), var(--yellow) 40%, var(--orange) 75%, var(--red));
-    z-index: 200;
-    transition: width 0.08s linear;
-  }
-
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    padding: 20px 48px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    backdrop-filter: blur(20px);
-    background: rgba(8,8,8,0.8);
-  }
-
-  .nav-logo {
-    font-family: 'Satoshi', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--white);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: baseline;
-  }
-  .nav-logo span { color: var(--green); display: inline-block; transition: transform .3s ease; }
-  .nav-logo:hover span { transform: translateY(-3px) scale(1.5); }
-
-  .nav-time {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--muted);
-    text-transform: uppercase;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-  .nav-time .dot {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: var(--green);
-    animation: pulse-dot 2s ease-in-out infinite;
-  }
-
-  .back-link {
-    font-size: 13px;
-    color: var(--muted);
-    text-decoration: none;
-    transition: color 0.2s;
-    display: inline-flex; align-items: center; gap: 8px;
-  }
-  .back-link:hover { color: var(--white); }
-  .back-link .arrow { transition: transform .25s; }
-  .back-link:hover .arrow { transform: translateX(-4px); }
-
-  @keyframes pulse-dot {
-    0%,100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(1.3); }
-  }
-
-  .container {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 160px 48px 80px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .page-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 7px 18px;
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    font-size: 11px;
-    color: var(--muted-2);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 32px;
-    background: rgba(20,20,20,0.4);
-    font-family: var(--mono);
-    animation: fadeUp 0.8s ease both;
-  }
-  .page-eyebrow-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--green);
-    animation: pulse-dot 2s ease-in-out infinite;
-    box-shadow: 0 0 12px var(--green);
-  }
-
-  .page-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(48px, 8vw, 88px);
-    font-weight: 400;
-    letter-spacing: -2.5px;
-    line-height: 0.95;
-    margin-bottom: 16px;
-  }
-  .page-title .line {
-    display: block;
-    overflow: hidden;
-  }
-  .page-title .line > span {
-    display: inline-block;
-    transform: translateY(110%);
-    animation: rise 0.9s cubic-bezier(.2,.7,.2,1) forwards;
-  }
-  .page-title .line:nth-child(1) > span { animation-delay: 0.10s; }
-  .page-title .line:nth-child(2) > span { animation-delay: 0.22s; }
-  .page-title em {
-    font-style: italic;
-    color: var(--green);
-  }
-
-  @keyframes rise {
-    from { transform: translateY(110%); }
-    to { transform: translateY(0); }
-  }
-
-  .last-updated {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 64px;
-    font-family: var(--mono);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    animation: fadeUp 0.8s 0.4s ease both;
-  }
-
-  .highlight-box {
-    border: 1px solid rgba(34,197,94,0.2);
-    background: rgba(34,197,94,0.05);
-    border-radius: 14px;
-    padding: 28px 32px;
-    margin: 0 0 56px;
-    position: relative;
-    overflow: hidden;
-    animation: fadeUp 0.8s 0.5s ease both;
-  }
-  .highlight-box::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 3px; height: 100%;
-    background: var(--green);
-  }
-  .highlight-box::after {
-    content: '';
-    position: absolute;
-    top: -50%; left: -10%;
-    width: 200px; height: 200px;
-    background: radial-gradient(circle, rgba(34,197,94,0.08), transparent);
-    pointer-events: none;
-    animation: glow-drift 8s ease-in-out infinite;
-  }
-  @keyframes glow-drift {
-    0%, 100% { transform: translate(0, 0); }
-    50% { transform: translate(40px, 30px); }
-  }
-  .highlight-box p {
-    color: #cccccc;
-    margin: 0;
-    font-size: 15px;
-    position: relative; z-index: 1;
-  }
-  .highlight-box strong { color: var(--green); }
-
-  h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 26px;
-    font-weight: 400;
-    margin-top: 56px;
-    margin-bottom: 16px;
-    letter-spacing: -0.5px;
-    line-height: 1.2;
-  }
-  h2 .num {
-    display: inline-block;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--muted);
-    margin-right: 14px;
-    vertical-align: middle;
-    text-transform: uppercase;
-    font-style: normal;
-  }
-
-  p {
-    font-size: 15px;
-    color: #aaaaaa;
-    margin-bottom: 16px;
-  }
-  p a { color: var(--green); text-decoration: none; border-bottom: 1px solid rgba(34,197,94,0.3); transition: border .2s; }
-  p a:hover { border-bottom-color: var(--green); }
-
-  .section-block {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity .8s, transform .8s;
-  }
-  .section-block.in-view { opacity: 1; transform: translateY(0); }
-
-  /* Footer */
-  footer {
-    position: relative;
-    z-index: 1;
-    border-top: 1px solid var(--border);
-    margin-top: 80px;
-  }
-  .footer-marquee {
-    overflow: hidden;
-    padding: 24px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .marquee {
-    display: flex;
-    gap: 48px;
-    width: max-content;
-    animation: marquee-scroll 60s linear infinite;
-    font-family: 'DM Serif Display', serif;
-    font-style: italic;
-    font-size: clamp(32px, 5vw, 56px);
-    letter-spacing: -1px;
-    color: rgba(255,255,255,0.06);
-    line-height: 1;
-  }
-  @keyframes marquee-scroll {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
-
-  .footer-bottom {
-    padding: 28px 48px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: var(--muted);
-    font-size: 13px;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-  .footer-logo { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--white); font-style: italic; }
-  .footer-bottom a { color: inherit; text-decoration: none; transition: color .2s; }
-  .footer-bottom a:hover { color: var(--white); }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @media (max-width: 768px) {
-    nav { padding: 16px 24px; }
-    .nav-time { display: none; }
-    .container { padding: 130px 24px 60px; }
-    .footer-bottom { flex-direction: column; gap: 12px; text-align: center; padding: 24px; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
-  }
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy Policy — Deadline</title>
+<meta name="description" content="Deadline needs no account or personal information. Your subjects, assignments and due dates stay on your device.">
+<meta name="theme-color" content="#0A0A0B">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://deadline-website-tau.vercel.app/privacy">
+<link rel="icon" type="image/png" href="assets/img/favicon-64.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/Satoshi-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/site.css">
 <script defer src="https://cloud.umami.is/script.js" data-website-id="f7c7fc25-7401-4f5f-90be-51c1d1f1da90"></script>
 </head>
-<body>
-
-<div class="scroll-progress" id="scrollProgress"></div>
-
-<nav>
-  <a href="index.html" class="nav-logo">deadline<span>.</span></a>
-  <div class="nav-time" id="navTime"><span class="dot"></span><span id="navTimeText">SYNC · 00:00:00</span></div>
-  <a href="index.html" class="back-link"><span class="arrow">←</span> Back to home</a>
-</nav>
-
-<div class="container">
-
-  <div class="page-eyebrow">
-    <div class="page-eyebrow-dot"></div>
-    Legal · Privacy
+<body class="docpage">
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav scrolled">
+  <div class="wrap nav-in">
+    <a class="brand" href="/" aria-label="Deadline, home">
+      <img src="assets/img/favicon-64.png" alt="" width="28" height="28">
+      <span>Deadline<b>.</b></span>
+    </a>
+    <nav class="nav-links" aria-label="Site">
+      <a href="/">Home</a>
+      <a href="support">Support</a>
+    </nav>
+    <a class="btn btn-accent btn-sm" href="https://apps.apple.com/app/deadline/id6767482309" data-umami-event="app-store" data-umami-event-where="privacy">Get it free</a>
   </div>
+</header>
 
-  <h1 class="page-title">
-    <span class="line"><span>Privacy</span></span>
-    <span class="line"><span><em>Policy.</em></span></span>
-  </h1>
-  <div class="last-updated">Last updated · September 2026</div>
+<main id="main" class="doc wrap">
+  <p class="eyebrow">Legal · Privacy</p>
+  <h1>Privacy Policy.</h1>
+  <p class="doc-date">Last updated · September 2026</p>
 
-  <div class="highlight-box">
-    <p><strong>The short version:</strong> Deadline needs no account or personal information. Your subjects, assignments, due dates, and other student content stay on your device. Optional anonymous product analytics help us improve the app and can be disabled in Settings.</p>
-  </div>
+  <p class="doc-short"><strong>The short version:</strong> Deadline needs no account or personal information. Your subjects, assignments, due dates, and other student content stay on your device. Optional anonymous product analytics help us improve the app and can be disabled in Settings.</p>
 
-  <div class="section-block">
-    <h2><span class="num">01</span>What data do we collect?</h2>
+  <section>
+    <h2><span>01</span>What data do we collect?</h2>
     <p>Deadline does not require an account, email address, or other personal information. The student content you enter — including subjects, assignments, due dates, and settings — is stored locally on your device and is not sent through product analytics.</p>
     <p>If analytics are enabled, Deadline sends anonymous product-interaction events as described below. Aptabase may also receive normal technical context supplied by its SDK, such as the app version, operating system, locale, and device or platform information.</p>
-  </div>
-
-  <div class="section-block">
-    <h2><span class="num">02</span>Do we use analytics or tracking?</h2>
+  </section>
+  <section>
+    <h2><span>02</span>Do we use analytics or tracking?</h2>
     <p>Deadline uses <a href="https://aptabase.com" target="_blank" rel="noopener noreferrer">Aptabase</a> as its third-party provider for optional anonymous product analytics. Product-interaction events may include: subject created, assignment created, assignment completed, and assignment deleted. An assignment-completed event may include anonymous timing information, such as how early or late it was completed.</p>
     <p>We use this information only to understand feature usage and improve Deadline. It is not used for advertising or cross-app or cross-site tracking, and it is not linked to a Deadline account or your real-world identity.</p>
     <p>You can disable analytics in Settings at any time. When disabled, Deadline stops sending new analytics events.</p>
     <p>This website uses <a href="https://umami.is" target="_blank" rel="noopener noreferrer">Umami</a>, a privacy-focused, cookie-free analytics tool, to understand anonymous website visits. Website analytics are separate from analytics in the Deadline app.</p>
-  </div>
-
-  <div class="section-block">
-    <h2><span class="num">03</span>Do we use advertising?</h2>
+  </section>
+  <section>
+    <h2><span>03</span>Do we use advertising?</h2>
     <p>No. Deadline contains no advertisements and no advertising SDKs. There are no ad networks integrated into the app.</p>
-  </div>
-
-  <div class="section-block">
-    <h2><span class="num">04</span>Do we require an account or login?</h2>
+  </section>
+  <section>
+    <h2><span>04</span>Do we require an account or login?</h2>
     <p>No. Deadline requires no account, no email address, no login of any kind. You open the app and use it immediately.</p>
-  </div>
-
-  <div class="section-block">
-    <h2><span class="num">05</span>Do we share data with third parties?</h2>
+  </section>
+  <section>
+    <h2><span>05</span>Do we share data with third parties?</h2>
     <p>Student content is not shared with Aptabase. When analytics are enabled, anonymous product events and normal SDK technical context are sent to Aptabase for the purposes described above. Deadline does not sell user data.</p>
-  </div>
-
-  <div class="section-block">
-    <h2><span class="num">06</span>What happens if I delete the app?</h2>
+  </section>
+  <section>
+    <h2><span>06</span>What happens if I delete the app?</h2>
     <p>All your data is permanently deleted when you uninstall Deadline. Since everything is stored locally on your device, removing the app removes everything. There are no backups on our end because we have no servers.</p>
-  </div>
-
-  <div class="section-block">
-    <h2><span class="num">07</span>Children's privacy</h2>
+  </section>
+  <section>
+    <h2><span>07</span>Children’s privacy</h2>
     <p>Deadline does not require children or other users to provide an account or personal information. Student content remains stored locally, and optional anonymous analytics can be disabled in Settings.</p>
-  </div>
-
-  <div class="section-block">
-    <h2><span class="num">08</span>Changes to this policy</h2>
+  </section>
+  <section>
+    <h2><span>08</span>Changes to this policy</h2>
     <p>If our privacy practices change, we will update this page and the date at the top so the policy continues to describe how Deadline handles information.</p>
-  </div>
+  </section>
+  <section>
+    <h2><span>09</span>Contact</h2>
+    <p>If you have any questions about this privacy policy, you can reach us at <a href="mailto:deadlineapp.contact@gmail.com">deadlineapp.contact@gmail.com</a>.</p>
+  </section>
+</main>
 
-  <div class="section-block">
-    <h2><span class="num">09</span>Contact</h2>
-    <p>If you have any questions about this privacy policy, you can reach us at <a href="/cdn-cgi/l/email-protection#2a4e4f4b4e4643444f4b5a5a044945445e4b495e6a4d474b434604494547"><span class="__cf_email__" data-cfemail="96f2f3f7f2fafff8f3f7e6e6b8f5f9f8e2f7f5e2d6f1fbf7fffab8f5f9fb">[email&#160;protected]</span></a></p>
-  </div>
-
-</div>
-
-<footer>
-  <div class="footer-marquee" aria-hidden="true">
-    <div class="marquee">
-      <span>deadline.</span><span>deadline.</span><span>deadline.</span><span>deadline.</span>
-      <span>deadline.</span><span>deadline.</span><span>deadline.</span><span>deadline.</span>
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div class="foot-brand">
+      <img src="assets/img/icon-256.png" alt="" width="40" height="40">
+      <div><p class="wordmark">Deadline<b>.</b></p><p>Your semester, under control.</p></div>
     </div>
-  </div>
-  <div class="footer-bottom">
-    <div class="footer-logo">deadline.</div>
-    <div>© 2026 Deadline. All rights reserved.</div>
-    <div>
-      <a href="index.html">Home</a>
-      &nbsp;·&nbsp;
-      <a href="support.html">Support</a>
-      &nbsp;·&nbsp;
-      <a href="/cdn-cgi/l/email-protection#36525357525a5f5853574646185559584257554276515b575f5a1855595b">Contact</a>
-    </div>
+    <nav aria-label="Footer">
+      <a href="/">Home</a>
+      <a href="support">Support</a>
+      <a href="privacy" aria-current="page">Privacy</a>
+      <a href="mailto:deadlineapp.contact@gmail.com">Contact</a>
+    </nav>
+    <p class="foot-small">© 2026 Deadline. All rights reserved.</p>
   </div>
 </footer>
-
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  const progressEl = document.getElementById('scrollProgress');
-  function updateProgress() {
-    const h = document.documentElement;
-    const total = h.scrollHeight - h.clientHeight;
-    progressEl.style.width = (total > 0 ? (h.scrollTop / total) * 100 : 0) + '%';
-  }
-  window.addEventListener('scroll', updateProgress, { passive: true });
-  updateProgress();
-
-  function pad(n) { return String(n).padStart(2, '0'); }
-  function updateNavTime() {
-    const d = new Date();
-    document.getElementById('navTimeText').textContent =
-      'SYNC · ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
-  }
-  setInterval(updateNavTime, 1000); updateNavTime();
-
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in-view');
-        io.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15 });
-  document.querySelectorAll('.section-block').forEach(el => io.observe(el));
-</script>
-
 </body>
 </html>
