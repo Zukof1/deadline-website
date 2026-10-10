@@ -21,7 +21,7 @@ npx serve . -l 4321
 - `assets/fonts/Satoshi-Variable.woff2` — the app’s own Satoshi, converted from `assets/fonts/Satoshi/Satoshi-Variable.ttf`.
 - `assets/img/icons.svg` — glyphs extracted from the app’s Ionicons font, so icons match the app exactly.
 - `assets/img/screens/*.webp` — screens from the current App Store screenshots.
-- `assets/video/rec-*.mp4` — the real screen recordings from `marketing/reference-videos/`, re-encoded (H.264, 600px, no audio). They load and play only while on screen.
+- `assets/video/rec-*.mp4` — real screen recordings from `marketing/reference-videos/`, re-encoded (H.264, ~600px, no audio). They load and play only while on screen. `rec-recurring.mp4` is cut with `Deadline-Creative/12_Production-Tools/bin/dl-webclip` (two segments of one take, 1×).
 - `assets/video/ad-1158-confession.mp4` — the “11:58 Confession” ad, loaded only when someone opens it.
 - `assets/img/og.png` — share image. Source: `Deadline-Creative/11_Website/og-image.html` in the app repo.
 

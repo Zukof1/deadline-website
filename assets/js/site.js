@@ -49,8 +49,12 @@
     if (h > 0) return `Next Due In: ${h}h ${m}m`;
     return `Next Due In: ${m}m`;
   }
-  const formatDue = (dt) =>
-    `Due: ${dt.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })} @ ${dt.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}`;
+  /* ── TaskCard.tsx formatCompactDueDate: "Fri, 3 Oct · 11:59 pm", year only when not this year ── */
+  const formatDue = (dt) => {
+    const thisYear = dt.getFullYear() === new Date().getFullYear();
+    const date = dt.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', ...(thisYear ? {} : { year: 'numeric' }) });
+    return `${date} · ${dt.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}`;
+  };
 
   function nextFriday(now = new Date()) {
     const t = new Date(now);
@@ -330,21 +334,26 @@
   $$('video[data-poster]').forEach((v) => {
     seen(v, (el, on, io) => { if (on) { el.poster = el.dataset.poster; io && io.unobserve(el); } }, { rootMargin: '1200px 0px' });
   });
+  const inView = new Set();
+  const tryPlay = (el) => { const p = el.play(); if (p) p.catch(() => { if (!document.hidden) el.controls = true; }); };
   $$('video[data-src]').forEach((v) => {
     if (v.closest('dialog')) return;
     if (reduced || saveData) { v.controls = true; v.preload = 'none'; v.src = v.dataset.src; return; }
     seen(v, (el, on) => {
       if (on) {
+        inView.add(el);
         if (!el.src) el.src = el.dataset.src;
-        const p = el.play(); if (p) p.catch(() => { el.controls = true; });
-      } else if (!el.paused) el.pause();
+        tryPlay(el);
+      } else { inView.delete(el); if (!el.paused) el.pause(); }
     }, { threshold: .5 });
   });
+  // A tab that was in the background when a clip scrolled in gets it playing on return.
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) inView.forEach((el) => { if (el.paused && !el.controls) tryPlay(el); }); });
 
   /* ── the 11:58 film ──────────────────────────────────────────────────── */
   const box = $('#filmBox'), film = $('#filmVideo');
   $('#filmBtn').addEventListener('click', () => {
-    if (!film.src) film.src = film.dataset.src;
+    if (!film.src) { film.poster = film.dataset.filmPoster; film.src = film.dataset.src; }
     if (box.showModal) box.showModal(); else box.setAttribute('open', '');
     const p = film.play(); if (p) p.catch(() => {});
   });

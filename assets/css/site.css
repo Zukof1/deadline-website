@@ -165,7 +165,7 @@ h3 { font-size: 20px; font-weight: 800; letter-spacing: -.02em; line-height: 1.2
 }
 .phone img, .phone video { width: 100%; height: auto; border-radius: 12.5cqw; background: var(--screen); }
 .phone-rec { border-radius: 14.5% / 7%; }
-.phone-rec video { aspect-ratio: 600 / 1236; object-fit: cover; }
+.phone-rec video { aspect-ratio: 600 / 1304; object-fit: cover; }
 
 .glow { position: absolute; border-radius: 50%; filter: blur(70px); pointer-events: none; }
 
@@ -214,16 +214,16 @@ h3 { font-size: 20px; font-weight: 800; letter-spacing: -.02em; line-height: 1.2
 .pivot-big span { color: var(--now); }
 .pivot-small { font-size: clamp(17px, 1.6vw, 20px); color: var(--ink-2); max-width: 46ch; }
 
-/* ── assignment card: components/TaskCard.tsx, in em so it can scale ───── */
+/* ── assignment card: components/TaskCard.tsx (1.7.0), in em so it can scale ─
+   Flat card, no rail or glow; countdown on the right with the due date under it. */
 .tc {
   --uc: var(--calm);
   font-size: 16px; line-height: 1.22; border-radius: 1.25em; position: relative;
-  box-shadow: 0 2px 4px #191919, 0 8px 12px -6px color-mix(in srgb, var(--sc) 45%, transparent);
 }
 .tc-in {
   display: flex; align-items: center; position: relative; overflow: hidden;
   padding: 1em; border-radius: 1.25em;
-  border: 1px solid transparent; border-left-width: 4px;
+  border: 1px solid transparent;
   background: #1B1B1C;
   transition: background-color .2s, border-color .2s, opacity .3s;
 }
@@ -235,11 +235,13 @@ h3 { font-size: 20px; font-weight: 800; letter-spacing: -.02em; line-height: 1.2
 }
 .tc-box svg { width: .875em; height: .875em; color: #fff; opacity: 0; transition: opacity .2s; }
 .tc-info { flex: 1; min-width: 0; }
-.tc-t { font-size: 1em; font-weight: 800; color: #fff; margin-bottom: .25em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -.005em; }
-.tc-d { font-size: .75em; font-weight: 750; color: #A0A0A0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tc-u { margin-left: auto; padding-left: 12px; font-size: .75em; font-weight: 800; letter-spacing: .5px; color: var(--uc); white-space: nowrap; font-variant-numeric: tabular-nums; }
-/* The shipping card’s bar sits 12pt in on the left and stops short on the right. */
-.tc-bar { position: absolute; left: .75em; right: 1.9em; bottom: 0; height: 3px; background: var(--uc); }
+.tc-t { font-size: 1em; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -.005em; }
+/* countdownColumn: min 88pt, right-aligned; 17pt bold tabular countdown, 12pt #888 date under it */
+.tc-col { flex: none; min-width: 5.5em; margin-left: .75em; display: grid; justify-items: end; }
+.tc-u { font-size: 1.0625em; font-weight: 750; letter-spacing: .5px; color: var(--uc); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tc-d { font-size: .75em; font-weight: 600; color: #888; margin-top: 2px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* The urgency bar: 3pt, inset 12pt from each side, along the bottom edge. */
+.tc-bar { position: absolute; left: .75em; right: .75em; bottom: 0; height: 3px; background: var(--uc); }
 .tc.live .tc-bar { animation: pulse 1.6s ease-in-out infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 
@@ -248,8 +250,9 @@ h3 { font-size: 20px; font-weight: 800; letter-spacing: -.02em; line-height: 1.2
 .tc.completing .tc-box { background: var(--sc); border-color: var(--sc); animation: pop .42s cubic-bezier(.3, 1.8, .5, 1); }
 .tc.completing .tc-box svg { opacity: 1; }
 .tc.completing .tc-u, .tc.completing .tc-bar, .tc.done .tc-u, .tc.done .tc-bar { visibility: hidden; }
+.tc.done .tc-u { display: none; }
 @keyframes pop { 40% { transform: scale(1.2); } }
-.tc.done .tc-in { opacity: .5; background: #151516; border-color: color-mix(in srgb, var(--sc) 12%, transparent); border-left-color: color-mix(in srgb, var(--sc) 50%, transparent); }
+.tc.done .tc-in { opacity: .5; background: #151516; }
 .tc.done .tc-box { background: rgba(255,255,255,.1); border-color: transparent; }
 .tc.done .tc-box svg { opacity: .4; }
 .tc.done .tc-t { text-decoration: line-through; color: #888; }
@@ -413,8 +416,7 @@ input[type=range]::-moz-range-thumb { width: 24px; height: 24px; border-radius: 
 
 .extras { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(20px, 3vw, 32px); margin-top: clamp(56px, 7vw, 96px); }
 .extra { margin: 0; display: grid; grid-template-rows: auto 1fr; border-radius: 28px; overflow: hidden; background: var(--screen); border: 1px solid var(--hair); padding: clamp(16px, 3vw, 32px) clamp(16px, 3vw, 32px) 0; }
-.extra img { width: min(100%, 380px); height: auto; margin: 0 auto; aspect-ratio: 610 / 760; object-fit: cover; object-position: center top; border-radius: 22px; }
-.extra .crop-recurring { object-position: center 88%; }
+.extra img, .extra video { width: min(100%, 380px); height: auto; margin: 0 auto; aspect-ratio: 610 / 760; object-fit: cover; object-position: center top; border-radius: 22px; background: var(--screen); }
 .extra figcaption { padding: 22px 8px 26px; color: var(--ink-2); font-size: 16px; }
 .extra figcaption b { color: var(--ink); display: block; font-size: 18px; margin-bottom: 4px; }
 @media (max-width: 720px) { .extras { grid-template-columns: 1fr; } }
